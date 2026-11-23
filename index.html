@@ -391,13 +391,13 @@
 
       <div class="mt-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-400/35 flex items-center justify-between gap-2.5">
         <div class="min-w-0">
-          <span class="text-xs font-black text-amber-300 block">☕ ¿Querés colaborar?</span>
+          <span class="text-xs font-black text-amber-300 block">🎮 Acceso libre por ahora</span>
           <span id="exit-support-hint" class="text-[10px] text-slate-300 block leading-snug">
-            Si te sirvió o te divirtió, podés dejar tu aporte voluntario.
+            El taller está abierto y gratuito para probar y jugar.
           </span>
         </div>
         <button type="button" id="exit-go-support-btn" class="px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] shrink-0 transition active:scale-95">
-          Colaborar
+          Ver estado
         </button>
       </div>
 
@@ -463,29 +463,30 @@
     </div>
   </div>
 
-  <!-- MODAL COLABORAR -->
+  <!-- MODAL COLABORAR (MODO LIBRE POR AHORA) -->
   <div id="support-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4">
     <div class="bg-slate-900 border-2 border-amber-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl">
       <div class="flex justify-between items-center mb-2">
-        <h3 class="text-base font-black text-amber-400">☕ Colaboración para el Diseñador</h3>
+        <h3 class="text-base font-black text-amber-400">☕ Colaboración del Taller</h3>
         <button type="button" id="close-sup-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
       </div>
       <p class="text-xs text-slate-300 leading-relaxed mb-3">
-        Espacio de colaboración voluntaria para quien diseña y desarrolla el taller. Guardá tu enlace cuando lo tengas listo.
+        Por ahora el taller está en acceso libre para jugar, divertirte y probar sin aportes activos.
       </p>
       <div id="support-link-ready-box" class="hidden mb-3 p-3 rounded-xl bg-slate-950 border border-emerald-500/40">
-        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">Enlace de colaboración listo</span>
+        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">Enlace habilitado</span>
         <p id="support-link-preview" class="text-xs mono text-slate-200 break-all mb-2.5"></p>
         <a id="support-external-anchor" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
           <span>🚀</span>
           <span>Ir a colaborar</span>
         </a>
       </div>
-      <div id="support-link-empty-box" class="mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400">
-        Todavía no cargaste un enlace de colaboración. Pegá acá tu link cuando quieras.
+      <div id="support-link-empty-box" class="mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+        <span class="font-bold text-amber-300 block mb-0.5">Modo libre activo</span>
+        No hay ningún enlace de cobro ni datos personales configurados por el momento.
       </div>
-      <label class="block text-[11px] font-bold text-slate-400 mb-1">Enlace de colaboración</label>
-      <input id="support-url-input" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Enlace opcional (reservado para más adelante)</label>
+      <input id="support-url-input" type="url" placeholder="Desactivado por ahora" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
       <p id="support-error-msg" class="hidden mt-1.5 text-[11px] font-bold text-rose-400"></p>
       <div class="flex gap-2 mt-3.5">
         <button type="button" id="save-sup-btn" class="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
@@ -1012,8 +1013,8 @@
         if (closedNotice) closedNotice.classList.add('hidden');
 
         setText('exit-support-hint', state.supportUrl
-          ? 'Tenés un enlace de colaboración listo para aportar si lo deseás.'
-          : 'Recordá que podés dejar tu aporte o configurar tu link de colaboración.');
+          ? 'Tenés un enlace configurado para más adelante.'
+          : 'El taller está abierto y gratuito para probar y jugar.');
 
         syncExitLikeUI();
         showModal('exit-modal');
@@ -1309,7 +1310,7 @@
         window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Forjador de Oro') + '&body=' + encodeURIComponent(buildFullMessageBody());
       }
 
-      /* COLABORAR */
+      /* COLABORAR (MODO LIBRE POR AHORA) */
       function openSupportModal() {
         const input = document.getElementById('support-url-input');
         const err = document.getElementById('support-error-msg');
@@ -1351,7 +1352,7 @@
           openSupportModal();
         } catch (e) {
           if (err) {
-            err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
+            err.textContent = 'Ingresá un enlace válido o dejalo vacío para modo libre.';
             err.classList.remove('hidden');
           }
         }
