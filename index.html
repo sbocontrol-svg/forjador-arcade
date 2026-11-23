@@ -178,42 +178,42 @@
 
   <div>
     <!-- HEADER -->
-    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-3.5 py-3 shadow-lg gap-2">
-      <div class="flex items-center gap-2 min-w-0 flex-1">
+    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 shadow-lg">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
         <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black shrink-0">
           🔨
         </div>
         <div class="min-w-0 flex-1">
-          <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">Forjador de Oro</h1>
+          <h1 class="text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">Forjador de Oro</h1>
           <p id="header-user-subtitle" class="text-[11px] text-slate-400 truncate">Herrero Invitado · Arcade</p>
         </div>
       </div>
-      <div class="flex items-center gap-1 shrink-0">
-        <button type="button" id="open-nick-btn" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition text-xs" title="Apodo del herrero">
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" id="open-nick-btn" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition" title="Acceso y etiqueta del herrero">
           🏷️
         </button>
-        <button type="button" id="sound-toggle" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition text-xs" title="Sonido">
+        <button type="button" id="sound-toggle" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition" title="Sonido">
           <span id="sound-icon">🔊</span>
         </button>
-        <button type="button" id="open-reset-btn" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 flex items-center justify-center transition text-xs" title="Reiniciar partida">
+        <button type="button" id="open-reset-btn" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 flex items-center justify-center transition" title="Reiniciar partida">
           🔄
-        </button>
-        <button type="button" id="open-exit-btn" class="px-2.5 h-8 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center gap-1 transition text-[11px] font-extrabold" title="Salir de la plataforma">
-          <span>🚪</span>
-          <span>Salir</span>
         </button>
       </div>
     </header>
 
-    <!-- FILA DEBAJO DEL HEADER: MENSAJE Y COLABORAR -->
-    <div class="mt-2 grid grid-cols-2 gap-2">
-      <button type="button" id="open-msg-btn" class="py-2 px-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+    <!-- FILA DEBAJO DEL HEADER: MENSAJE, COLABORAR Y SALIR -->
+    <div class="mt-2 grid grid-cols-3 gap-2">
+      <button type="button" id="open-msg-btn" class="py-2 px-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center gap-1 text-xs font-extrabold transition">
         <span>✉️</span>
         <span>Mensaje</span>
       </button>
-      <button type="button" id="open-sup-btn" class="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+      <button type="button" id="open-sup-btn" class="py-2 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/40 flex items-center justify-center gap-1 text-xs font-extrabold transition">
         <span>☕</span>
         <span>Colaborar</span>
+      </button>
+      <button type="button" id="open-exit-btn" class="py-2 px-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center gap-1 text-xs font-extrabold transition">
+        <span>🚪</span>
+        <span>Salir</span>
       </button>
     </div>
 
@@ -341,7 +341,7 @@
     <section class="mt-3 bg-slate-900/70 border border-slate-800 rounded-xl p-3">
       <div class="flex items-center justify-between mb-1.5">
         <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Bitácora reciente</span>
-        <span class="text-[10px] text-slate-500">Guardado local</span>
+        <span id="profile-storage-badge" class="text-[10px] text-slate-500">Guardado local</span>
       </div>
       <div id="history-list" class="space-y-1.5 max-h-24 overflow-y-auto text-xs pr-1">
         <div class="text-slate-500 italic text-[11px]">Todavía no hay registros en la bitácora.</div>
@@ -358,13 +358,12 @@
         <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-2xl mx-auto mb-2">
           👋
         </div>
-        <h3 class="text-lg font-black text-amber-400 tracking-tight"> ¡Gracias! </h3>
+        <h3 class="text-lg font-black text-amber-400 tracking-tight">¡Gracias por pasar por el taller!</h3>
         <p id="exit-farewell-sub" class="text-xs text-slate-300 mt-1 leading-relaxed">
           Qué lindo que te hayas dado una vuelta por acá. Tu progreso queda guardado en este dispositivo.
         </p>
       </div>
 
-      <!-- LIKE + COMENTARIO RÁPIDO -->
       <div class="mt-4 p-3 rounded-2xl bg-slate-950/80 border border-slate-800">
         <div class="flex items-center justify-between gap-2">
           <span class="text-[11px] font-bold text-slate-300">¿Te gustó la experiencia?</span>
@@ -390,7 +389,6 @@
         <p id="exit-feedback-msg" class="hidden mt-1.5 text-[11px] font-bold text-emerald-400"></p>
       </div>
 
-      <!-- RECORDATORIO DE COLABORACIÓN -->
       <div class="mt-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-400/35 flex items-center justify-between gap-2.5">
         <div class="min-w-0">
           <span class="text-xs font-black text-amber-300 block">☕ ¿Querés colaborar?</span>
@@ -403,13 +401,11 @@
         </button>
       </div>
 
-      <!-- MENSAJE POST-INTENTO DE SALIDA (SI EL NAVEGADOR BLOQUEA window.close) -->
       <div id="exit-closed-notice" class="hidden mt-3 p-3 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-center">
         <p class="text-xs font-extrabold text-emerald-300">¡Hasta la próxima en el taller!</p>
         <p class="text-[11px] text-slate-300 mt-0.5">Ya podés cerrar esta pestaña o volver cuando gustes.</p>
       </div>
 
-      <!-- ACCIONES FINALES -->
       <div class="grid grid-cols-2 gap-2 mt-4">
         <button type="button" id="exit-stay-btn" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition">
           Quedarme un rato
@@ -502,18 +498,33 @@
     </div>
   </div>
 
-  <!-- MODAL APODO -->
+  <!-- MODAL ACCESO HERRERO -->
   <div id="nickname-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4">
     <div class="bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-5 w-full max-w-sm shadow-2xl">
       <div class="flex justify-between items-center mb-2">
-        <h3 class="text-base font-black text-amber-400">Apodo del Herrero</h3>
+        <h3 class="text-base font-black text-amber-400">🔐 Acceso del Herrero</h3>
         <button type="button" id="close-nick-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
       </div>
-      <p class="text-xs text-slate-300 mb-3">Elegí cómo querés que figure tu taller (no se piden datos personales).</p>
-      <input id="nickname-input" type="text" maxlength="24" placeholder="Ej: Juanma de la Forja" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-semibold text-xs focus:outline-none focus:border-amber-500" />
-      <button type="button" id="save-nick-btn" class="w-full mt-4 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm transition">
-        Guardar Apodo
-      </button>
+      <p id="auth-status-text" class="text-xs text-slate-300 mb-3">
+        Ingresá tu etiqueta y una contraseña (mínimo 4 caracteres) para validar.
+      </p>
+
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Etiqueta del Herrero</label>
+      <input id="nickname-input" type="text" maxlength="24" placeholder="Ej: Herrero" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-semibold text-xs focus:outline-none focus:border-amber-500" />
+
+      <label class="block text-[11px] font-bold text-slate-400 mt-2.5 mb-1">Contraseña de acceso</label>
+      <input id="access-password-input" type="password" maxlength="32" placeholder="Ingresá o creá tu clave" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
+
+      <p id="auth-feedback-msg" class="hidden mt-2 text-[11px] font-bold text-rose-400"></p>
+
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <button type="button" id="save-nick-btn" class="py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
+          Validar y Guardar
+        </button>
+        <button type="button" id="lock-session-btn" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition">
+          Bloquear sesión
+        </button>
+      </div>
     </div>
   </div>
 
@@ -589,755 +600,976 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'forjador_oro_arcade_v3';
-    const SELECTED_FRAME_KEY = 'taller_selected_frame_v1';
-    const MAX_SPINS_PER_ROUND_CYCLE = 3;
+    (function () {
+      const STORAGE_KEY = 'forjador_oro_arcade_v3';
+      const PROFILES_KEY = 'forjador_oro_perfiles_v1';
+      const JSON_VAULT_KEY = 'forjador_oro_json_registro_v1';
+      const SELECTED_FRAME_KEY = 'taller_selected_frame_v1';
+      const MAX_SPINS_PER_ROUND_CYCLE = 3;
 
-    const wheelSegments = [
-      { id: 'double', emoji: '🔥', title: '¡Doble Forja x2!', chip: '🔥 Doble x2', desc: 'Duplica las ganancias base en tus próximas partidas.' },
-      { id: 'gold250', emoji: '🪙', title: '¡Bolsa de +250 ORO!', chip: '🪙 +250 Oro', desc: 'Sumaste 250 monedas de oro directo a tu tesoro.' },
-      { id: 'joker', emoji: '🃏', title: '¡Comodín Joker +15%!', chip: '🃏 Joker +15%', desc: 'Suma +15% extra al botín final.' },
-      { id: 'stars', emoji: '⭐', title: '¡Estrellas Dobles!', chip: '⭐ Estrellas x2', desc: 'Estrellas y premios especiales valen x2.' },
-      { id: 'spark', emoji: '💥', title: '¡Chispa Rebelde!', chip: '💥 Chispa -100', desc: 'Saltó una chispa y perdiste 100 ORO (mínimo 0).' },
-      { id: 'time', emoji: '⏱️', title: '¡Giro Extra de Ruleta!', chip: '⏱️ +1 Giro', desc: 'Sumaste +1 giro extra de ruleta.' }
-    ];
+      const wheelSegments = [
+        { id: 'double', emoji: '🔥', title: '¡Doble Forja x2!', chip: '🔥 Doble x2', desc: 'Duplica las ganancias base en tus próximas partidas.' },
+        { id: 'gold250', emoji: '🪙', title: '¡Bolsa de +250 ORO!', chip: '🪙 +250 Oro', desc: 'Sumaste 250 monedas de oro directo a tu tesoro.' },
+        { id: 'joker', emoji: '🃏', title: '¡Comodín Joker +15%!', chip: '🃏 Joker +15%', desc: 'Suma +15% extra al botín final.' },
+        { id: 'stars', emoji: '⭐', title: '¡Estrellas Dobles!', chip: '⭐ Estrellas x2', desc: 'Estrellas y premios especiales valen x2.' },
+        { id: 'spark', emoji: '💥', title: '¡Chispa Rebelde!', chip: '💥 Chispa -100', desc: 'Saltó una chispa y perdiste 100 ORO (mínimo 0).' },
+        { id: 'time', emoji: '⏱️', title: '¡Giro Extra de Ruleta!', chip: '⏱️ +1 Giro', desc: 'Sumaste +1 giro extra de ruleta.' }
+      ];
 
-    let state = {
-      gold: 1000,
-      bestRoundGold: 0,
-      roundsPlayed: 0,
-      totalTaps: 0,
-      visitsCount: 0,
-      ridesSinceWheel: 0,
-      bestRideMeters: 0,
-      anvilLevel: 1,
-      rideLevel: 1,
-      wheelLevel: 1,
-      shieldCharges: 0,
-      nickname: '',
-      supportUrl: '',
-      creatorWhatsApp: '5492364502082',
-      creatorEmail: 'sbocontrol@gmail.com',
-      history: [],
-      soundEnabled: true,
-      activeBuffs: [],
-      spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
-      wheelPos: null,
-      likedPlatform: false,
-      lastExitComment: ''
-    };
-
-    let selectedMode = null;
-    let currentWheelAngle = 0;
-    let isSpinning = false;
-    let spinAnimFrame = null;
-    let audioCtx = null;
-
-    function formatGold(num) {
-      return Math.floor(num).toLocaleString('es-AR');
-    }
-
-    function addBuff(id) {
-      if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
-      if (!state.activeBuffs.includes(id)) state.activeBuffs.push(id);
-    }
-
-    function addHistory(text, amountStr, type = 'gain') {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-      state.history.unshift({ time: timeStr, text, amount: amountStr, type });
-      if (state.history.length > 20) state.history.pop();
-    }
-
-    function getRankInfo() {
-      const t = state.totalTaps || 0;
-      if (t < 25) return { name: '🔨 Aprendiz', bonus: '+0% poder de forja', min: 0, next: 25 };
-      if (t < 75) return { name: '⚒️ Oficial', bonus: '+10% poder de forja', min: 25, next: 75 };
-      if (t < 150) return { name: '⚡ Maestro Herrero', bonus: '+25% poder de forja', min: 75, next: 150 };
-      return { name: '👑 Leyenda del Taller', bonus: '+50% poder de forja', min: 150, next: 300 };
-    }
-
-    function renderActiveChips(containerId) {
-      const el = document.getElementById(containerId);
-      if (!el) return false;
-      const chips = [];
-      (state.activeBuffs || []).forEach(id => {
-        const seg = wheelSegments.find(s => s.id === id);
-        if (seg) chips.push(seg.chip);
-      });
-      if ((state.rideLevel || 1) > 1) {
-        chips.push('🛵 Moto Nv.' + state.rideLevel);
-      }
-      if ((state.shieldCharges || 0) > 0) {
-        chips.push('🛡️ Rescoldo x' + state.shieldCharges);
-      }
-      el.innerHTML = chips.map(label =>
-        '<span class="px-2 py-0.5 rounded-full bg-slate-950/90 border border-amber-400/40 text-amber-200 font-bold text-[10px]">' + label + '</span>'
-      ).join('');
-      return chips.length > 0;
-    }
-
-    function renderHistory() {
-      const list = document.getElementById('history-list');
-      if (!Array.isArray(state.history) || state.history.length === 0) {
-        list.innerHTML = '<div class="text-slate-500 italic text-[11px]">Todavía no hay registros en la bitácora.</div>';
-        return;
-      }
-      list.innerHTML = state.history.slice(0, 8).map(item => {
-        const color = item.type === 'loss' ? 'text-rose-400' : 'text-emerald-400';
-        return '<div class="flex items-center justify-between bg-slate-950/70 px-2.5 py-1 rounded-lg border border-slate-800/80">' +
-          '<span class="text-slate-300 truncate pr-2"><span class="text-slate-500 mono mr-1">' + item.time + '</span>' + item.text + '</span>' +
-          '<span class="font-bold mono shrink-0 ' + color + '">' + item.amount + '</span>' +
-        '</div>';
-      }).join('');
-    }
-
-    function syncExitLikeUI() {
-      const iconEl = document.getElementById('exit-like-icon');
-      const labelEl = document.getElementById('exit-like-label');
-      const btnEl = document.getElementById('exit-like-btn');
-      if (!iconEl || !labelEl || !btnEl) return;
-      if (state.likedPlatform) {
-        iconEl.textContent = '❤️';
-        labelEl.textContent = '¡Like dado!';
-        btnEl.classList.add('border-rose-400/60', 'bg-rose-500/20');
-      } else {
-        iconEl.textContent = '🤍';
-        labelEl.textContent = 'Dejar Like';
-        btnEl.classList.remove('border-rose-400/60', 'bg-rose-500/20');
-      }
-    }
-
-    function updateUI() {
-      const rank = getRankInfo();
-      const span = Math.max(1, rank.next - rank.min);
-      const pct = Math.max(0, Math.min(100, Math.round(((state.totalTaps - rank.min) / span) * 100)));
-
-      document.getElementById('total-gold').textContent = formatGold(state.gold);
-      document.getElementById('best-record-badge').textContent = 'Récord: ' + formatGold(state.bestRoundGold);
-      document.getElementById('rank-title').textContent = rank.name;
-      document.getElementById('rank-bonus').textContent = rank.bonus;
-      document.getElementById('rank-progress-text').textContent = state.totalTaps + ' / ' + rank.next + ' golpes';
-      document.getElementById('rank-progress-bar').style.width = pct + '%';
-
-      document.getElementById('total-taps-display').textContent = formatGold(state.totalTaps);
-      document.getElementById('rounds-played-display').textContent = formatGold(state.roundsPlayed);
-      document.getElementById('visits-count-display').textContent = formatGold(state.visitsCount);
-      document.getElementById('floating-spins-badge').textContent = state.spinsLeft + '/' + MAX_SPINS_PER_ROUND_CYCLE;
-      document.getElementById('modal-spins-counter').textContent = state.spinsLeft + ' de ' + MAX_SPINS_PER_ROUND_CYCLE;
-      document.getElementById('header-user-subtitle').textContent =
-        (state.nickname ? state.nickname : 'Herrero Invitado') + ' · Mejor tramo: ' + formatGold(state.bestRideMeters || 0) + ' m';
-      document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
-
-      const buffBanner = document.getElementById('active-buffs-banner');
-      const hasChips = renderActiveChips('active-buffs-chips');
-      if (hasChips) {
-        buffBanner.classList.remove('hidden');
-        buffBanner.style.display = 'flex';
-      } else {
-        buffBanner.classList.add('hidden');
-        buffBanner.style.display = 'none';
+      function createDefaultState() {
+        return {
+          gold: 1000,
+          bestRoundGold: 0,
+          roundsPlayed: 0,
+          totalTaps: 0,
+          visitsCount: 0,
+          ridesSinceWheel: 0,
+          bestRideMeters: 0,
+          anvilLevel: 1,
+          rideLevel: 1,
+          wheelLevel: 1,
+          shieldCharges: 0,
+          nickname: '',
+          passwordHash: '',
+          sessionUnlocked: false,
+          supportUrl: '',
+          creatorWhatsApp: '5492364502082',
+          creatorEmail: 'sbocontrol@gmail.com',
+          history: [],
+          soundEnabled: true,
+          activeBuffs: [],
+          spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
+          wheelPos: null,
+          likedPlatform: false,
+          lastExitComment: ''
+        };
       }
 
-      const modalBuffBox = document.getElementById('wheel-accumulated-box');
-      if (Array.isArray(state.activeBuffs) && state.activeBuffs.length > 0) {
-        renderActiveChips('modal-buff-list');
-        modalBuffBox.classList.remove('hidden');
-      } else {
-        modalBuffBox.classList.add('hidden');
-      }
+      let state = createDefaultState();
+      let selectedMode = null;
+      let currentWheelAngle = 0;
+      let isSpinning = false;
+      let spinAnimFrame = null;
+      let audioCtx = null;
 
-      syncExitLikeUI();
-      renderHistory();
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {}
-    }
-
-    function loadState() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          state = Object.assign({}, state, parsed);
-          if (!state.creatorWhatsApp) state.creatorWhatsApp = '5492364502082';
-          if (!state.creatorEmail) state.creatorEmail = 'sbocontrol@gmail.com';
-          if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
-          if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
-          if (!Array.isArray(state.history)) state.history = [];
-          if (typeof state.likedPlatform !== 'boolean') state.likedPlatform = false;
-          if (typeof state.lastExitComment !== 'string') state.lastExitComment = '';
+      function hashSecret(str) {
+        let h = 2166136261;
+        const text = String(str || '');
+        for (let i = 0; i < text.length; i++) {
+          h ^= text.charCodeAt(i);
+          h = Math.imul(h, 16777619);
         }
-      } catch (e) {}
-      state.visitsCount = (state.visitsCount || 0) + 1;
-      saveState();
-      updateUI();
-    }
-
-    /* MARCOS Y LUCESITA */
-    const frames = Array.from(document.querySelectorAll('.selectable-frame'));
-
-    function applyFrameSelection(mode) {
-      selectedMode = mode || null;
-      frames.forEach(frame => {
-        const active = selectedMode !== null && frame.dataset.mode === selectedMode;
-        frame.classList.toggle('is-selected', active);
-      });
-      const hintEl = document.getElementById('frame-hint-text');
-      if (hintEl) {
-        hintEl.textContent = selectedMode
-          ? 'Luz encendida · Tocá de nuevo para entrar'
-          : 'Todos apagados · Tocá un marco para encender';
+        return (h >>> 0).toString(16);
       }
-      try {
-        if (selectedMode) {
-          localStorage.setItem(SELECTED_FRAME_KEY, selectedMode);
-        } else {
-          localStorage.removeItem(SELECTED_FRAME_KEY);
-        }
-      } catch (e) {}
-    }
 
-    function initFrames() {
-      let savedMode = null;
-      try {
-        const m = localStorage.getItem(SELECTED_FRAME_KEY);
-        if (m && frames.some(f => f.dataset.mode === m)) {
-          savedMode = m;
-        }
-      } catch (e) {}
-      applyFrameSelection(savedMode);
+      function normalizeProfileKey(name) {
+        return String(name || '').trim().toLowerCase();
+      }
 
-      frames.forEach(frame => {
-        frame.addEventListener('click', (e) => {
-          const mode = frame.dataset.mode;
-          const isAlreadySelected = selectedMode === mode && frame.classList.contains('is-selected');
-          if (!isAlreadySelected) {
-            e.preventDefault();
-            applyFrameSelection(mode);
-          } else {
-            applyFrameSelection(mode);
+      function readProfilesMap() {
+        try {
+          const raw = localStorage.getItem(PROFILES_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (err) {
+          return {};
+        }
+      }
+
+      function writeProfilesMap(map) {
+        try {
+          localStorage.setItem(PROFILES_KEY, JSON.stringify(map));
+        } catch (err) {}
+      }
+
+      function buildBackgroundJsonPayload() {
+        return {
+          perfil: {
+            etiqueta: state.nickname || 'Invitado',
+            accesoValidado: Boolean(state.passwordHash && state.sessionUnlocked),
+            actualizadoEn: new Date().toISOString()
+          },
+          datosPartida: {
+            oro: Number(state.gold) || 0,
+            recordRonda: Number(state.bestRoundGold) || 0,
+            rondasJugadas: Number(state.roundsPlayed) || 0,
+            golpesTotales: Number(state.totalTaps) || 0,
+            visitas: Number(state.visitsCount) || 0,
+            mejorTramoMetros: Number(state.bestRideMeters) || 0,
+            nivelYunque: Number(state.anvilLevel) || 1,
+            nivelPaseo: Number(state.rideLevel) || 1,
+            nivelRuleta: Number(state.wheelLevel) || 1,
+            escudos: Number(state.shieldCharges) || 0,
+            bonosActivos: Array.isArray(state.activeBuffs) ? state.activeBuffs.slice() : [],
+            tiradasRestantes: Number(state.spinsLeft ?? MAX_SPINS_PER_ROUND_CYCLE)
+          },
+          registrosJuegos: Array.isArray(state.history) ? state.history.slice() : []
+        };
+      }
+
+      function syncBackgroundJsonStore() {
+        try {
+          const payload = buildBackgroundJsonPayload();
+          const serialized = JSON.stringify(payload);
+          localStorage.setItem(JSON_VAULT_KEY, serialized);
+          const key = normalizeProfileKey(state.nickname);
+          if (key) {
+            const existingRaw = localStorage.getItem(JSON_VAULT_KEY + '_by_profile');
+            const byProfile = existingRaw ? JSON.parse(existingRaw) : {};
+            byProfile[key] = payload;
+            localStorage.setItem(JSON_VAULT_KEY + '_by_profile', JSON.stringify(byProfile));
           }
+          window.ForjadorJsonData = payload;
+        } catch (err) {}
+      }
+
+      function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      function formatGold(num) {
+        const safe = Number.isFinite(Number(num)) ? Number(num) : 0;
+        return Math.floor(safe).toLocaleString('es-AR');
+      }
+
+      function addBuff(id) {
+        if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+        if (!state.activeBuffs.includes(id)) state.activeBuffs.push(id);
+      }
+
+      function addHistory(text, amountStr, type) {
+        if (!Array.isArray(state.history)) state.history = [];
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+        state.history.unshift({ time: timeStr, text: text, amount: amountStr, type: type || 'gain' });
+        if (state.history.length > 20) state.history.pop();
+      }
+
+      function getRankInfo() {
+        const t = Number(state.totalTaps) || 0;
+        if (t < 25) return { name: '🔨 Aprendiz', bonus: '+0% poder de forja', min: 0, next: 25 };
+        if (t < 75) return { name: '⚒️ Oficial', bonus: '+10% poder de forja', min: 25, next: 75 };
+        if (t < 150) return { name: '⚡ Maestro Herrero', bonus: '+25% poder de forja', min: 75, next: 150 };
+        return { name: '👑 Leyenda del Taller', bonus: '+50% poder de forja', min: 150, next: 300 };
+      }
+
+      function renderActiveChips(containerId) {
+        const el = document.getElementById(containerId);
+        if (!el) return false;
+        const chips = [];
+        (state.activeBuffs || []).forEach(function (id) {
+          const seg = wheelSegments.find(function (s) { return s.id === id; });
+          if (seg) chips.push(seg.chip);
         });
-      });
-    }
-
-    /* AUDIO */
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioCtor = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtor) audioCtx = new AudioCtor();
+        if ((state.rideLevel || 1) > 1) chips.push('🛵 Moto Nv.' + state.rideLevel);
+        if ((state.shieldCharges || 0) > 0) chips.push('🛡️ Rescoldo x' + state.shieldCharges);
+        el.innerHTML = chips.map(function (label) {
+          return '<span class="px-2 py-0.5 rounded-full bg-slate-950/90 border border-amber-400/40 text-amber-200 font-bold text-[10px]">' + label + '</span>';
+        }).join('');
+        return chips.length > 0;
       }
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      return audioCtx;
-    }
 
-    function playSound(type) {
-      if (!state.soundEnabled) return;
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        if (type === 'star') {
-          osc.frequency.setValueAtTime(783.99, now);
-          osc.frequency.setValueAtTime(987.77, now + 0.05);
-          gain.gain.setValueAtTime(0.18, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-          osc.start(now); osc.stop(now + 0.15);
-        } else if (type === 'crash') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(175, now);
-          osc.frequency.exponentialRampToValueAtTime(65, now + 0.22);
-          gain.gain.setValueAtTime(0.2, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
-          osc.start(now); osc.stop(now + 0.24);
+      function renderHistory() {
+        const list = document.getElementById('history-list');
+        if (!list) return;
+        if (!Array.isArray(state.history) || state.history.length === 0) {
+          list.innerHTML = '<div class="text-slate-500 italic text-[11px]">Todavía no hay registros en la bitácora.</div>';
+          return;
         }
-      } catch (e) {}
-    }
-
-    function toggleSound() {
-      state.soundEnabled = !state.soundEnabled;
-      saveState();
-      updateUI();
-    }
-
-    /* MODALES GENERALES */
-    function showModal(id) {
-      const m = document.getElementById(id);
-      if (!m) return;
-      m.classList.remove('hidden');
-      m.style.display = 'flex';
-    }
-
-    function hideModal(id) {
-      const m = document.getElementById(id);
-      if (!m) return;
-      m.classList.add('hidden');
-      m.style.display = 'none';
-    }
-
-    /* SALIDA CON AGRADECIMIENTO, LIKE, COMENTARIO Y COLABORACIÓN */
-    function openExitModal() {
-      const nick = state.nickname ? state.nickname : 'Herrero';
-      document.getElementById('exit-farewell-sub').textContent =
-        '¡Gracias por haber pasado por el taller, ' + nick + '! Tu oro (' + formatGold(state.gold) + ' ORO) queda guardado acá.';
-      document.getElementById('exit-comment-input').value = state.lastExitComment || '';
-      document.getElementById('exit-feedback-msg').classList.add('hidden');
-      document.getElementById('exit-closed-notice').classList.add('hidden');
-
-      const supHint = document.getElementById('exit-support-hint');
-      if (state.supportUrl) {
-        supHint.textContent = 'Tenés un enlace de colaboración listo para aportar si lo deseás.';
-      } else {
-        supHint.textContent = 'Recordá que podés dejar tu aporte o configurar tu link de colaboración.';
+        list.innerHTML = state.history.slice(0, 8).map(function (item) {
+          const color = item.type === 'loss' ? 'text-rose-400' : 'text-emerald-400';
+          return '<div class="flex items-center justify-between bg-slate-950/70 px-2.5 py-1 rounded-lg border border-slate-800/80">' +
+            '<span class="text-slate-300 truncate pr-2"><span class="text-slate-500 mono mr-1">' + item.time + '</span>' + item.text + '</span>' +
+            '<span class="font-bold mono shrink-0 ' + color + '">' + item.amount + '</span>' +
+          '</div>';
+        }).join('');
       }
 
-      syncExitLikeUI();
-      showModal('exit-modal');
-    }
-
-    function toggleExitLike() {
-      state.likedPlatform = !state.likedPlatform;
-      if (state.likedPlatform) {
-        playSound('star');
-        addHistory('Dejó un ❤️ a la plataforma', 'Like', 'gain');
-      }
-      saveState();
-      updateUI();
-      const fb = document.getElementById('exit-feedback-msg');
-      fb.textContent = state.likedPlatform
-        ? '¡Gracias por ese like! Quedó registrado en tu bitácora.'
-        : 'Like quitado.';
-      fb.className = 'mt-1.5 text-[11px] font-bold text-rose-300';
-      fb.classList.remove('hidden');
-    }
-
-    function buildExitFeedbackMessage() {
-      const comment = document.getElementById('exit-comment-input').value.trim();
-      state.lastExitComment = comment;
-      saveState();
-
-      const likeStatus = state.likedPlatform ? '❤️ Sí, dejó Like' : '🤍 Sin marcar like';
-      const nick = state.nickname || 'Invitado';
-      return '¡Hola! Estuve en Forjador de Oro (' + nick + ') y quería dejarte mi feedback de salida.\n' +
-        'Like: ' + likeStatus + '\n' +
-        'Comentario: ' + (comment || '(Sin comentario escrito)') + '\n' +
-        'Oro actual: ' + formatGold(state.gold) + ' ORO · Visitas: ' + formatGold(state.visitsCount);
-    }
-
-    function sendExitViaWhatsApp() {
-      const fb = document.getElementById('exit-feedback-msg');
-      const phone = (state.creatorWhatsApp || '').replace(/\D/g, '');
-      if (!phone) {
-        fb.textContent = '⚠️ Cargá un WhatsApp en el botón Mensaje para enviarlo.';
-        fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
-        fb.classList.remove('hidden');
-        return;
-      }
-      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildExitFeedbackMessage()), '_blank', 'noopener,noreferrer');
-      fb.textContent = '✅ Abriendo WhatsApp con tu like y comentario...';
-      fb.className = 'mt-1.5 text-[11px] font-bold text-emerald-400';
-      fb.classList.remove('hidden');
-    }
-
-    function sendExitViaEmail() {
-      const fb = document.getElementById('exit-feedback-msg');
-      const email = (state.creatorEmail || '').trim();
-      if (!email) {
-        fb.textContent = '⚠️ Cargá un correo en el botón Mensaje para enviarlo.';
-        fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
-        fb.classList.remove('hidden');
-        return;
-      }
-      window.location.href = 'mailto:' + email +
-        '?subject=' + encodeURIComponent('Comentario de salida — Forjador de Oro') +
-        '&body=' + encodeURIComponent(buildExitFeedbackMessage());
-      fb.textContent = '✅ Abriendo tu correo con tu comentario...';
-      fb.className = 'mt-1.5 text-[11px] font-bold text-indigo-300';
-      fb.classList.remove('hidden');
-    }
-
-    function goToSupportFromExit() {
-      const comment = document.getElementById('exit-comment-input').value.trim();
-      if (comment) {
-        state.lastExitComment = comment;
-        saveState();
-      }
-      hideModal('exit-modal');
-      openSupportModal();
-    }
-
-    function confirmExitPlatform() {
-      const comment = document.getElementById('exit-comment-input').value.trim();
-      if (comment) {
-        state.lastExitComment = comment;
-      }
-      saveState();
-
-      try {
-        window.close();
-      } catch (e) {}
-
-      setTimeout(() => {
-        document.getElementById('exit-closed-notice').classList.remove('hidden');
-      }, 150);
-    }
-
-    /* APODO */
-    function openNicknameModal() {
-      document.getElementById('nickname-input').value = state.nickname || '';
-      showModal('nickname-modal');
-    }
-
-    function saveNickname() {
-      state.nickname = document.getElementById('nickname-input').value.trim().slice(0, 24);
-      saveState();
-      updateUI();
-      hideModal('nickname-modal');
-    }
-
-    /* REINICIAR PARTIDA COMPLETA */
-    function openResetModal() {
-      showModal('reset-modal');
-    }
-
-    function resetFullGame() {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(SELECTED_FRAME_KEY);
-      } catch (e) {}
-      state = {
-        gold: 1000,
-        bestRoundGold: 0,
-        roundsPlayed: 0,
-        totalTaps: 0,
-        visitsCount: 1,
-        ridesSinceWheel: 0,
-        bestRideMeters: 0,
-        anvilLevel: 1,
-        rideLevel: 1,
-        wheelLevel: 1,
-        shieldCharges: 0,
-        nickname: '',
-        supportUrl: '',
-        creatorWhatsApp: '5492364502082',
-        creatorEmail: 'sbocontrol@gmail.com',
-        history: [],
-        soundEnabled: true,
-        activeBuffs: [],
-        spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
-        wheelPos: null,
-        likedPlatform: false,
-        lastExitComment: ''
-      };
-      currentWheelAngle = 0;
-      const spinner = document.getElementById('wheel-spinner');
-      if (spinner) spinner.style.transform = 'rotate(0deg)';
-      const wheelBtn = document.getElementById('open-wheel-btn');
-      if (wheelBtn) {
-        wheelBtn.style.left = '';
-        wheelBtn.style.right = '10px';
-        wheelBtn.style.top = '24%';
-      }
-      saveState();
-      applyFrameSelection(null);
-      updateUI();
-      hideModal('reset-modal');
-    }
-
-    /* MENSAJE */
-    function openMessageModal() {
-      document.getElementById('creator-whatsapp-input').value = state.creatorWhatsApp || '';
-      document.getElementById('creator-email-input').value = state.creatorEmail || '';
-      document.getElementById('message-feedback-msg').classList.add('hidden');
-      const msgEl = document.getElementById('player-message-text');
-      if (!msgEl.value.trim()) {
-        msgEl.value = '¡Hola! Estuve probando el taller.';
-      }
-      showModal('message-modal');
-    }
-
-    function saveContactConfig() {
-      state.creatorWhatsApp = document.getElementById('creator-whatsapp-input').value.replace(/\D/g, '');
-      state.creatorEmail = document.getElementById('creator-email-input').value.trim();
-      saveState();
-      const fb = document.getElementById('message-feedback-msg');
-      fb.textContent = '✅ Contacto guardado en este dispositivo.';
-      fb.className = 'mt-2 text-[11px] font-bold text-emerald-400';
-      fb.classList.remove('hidden');
-    }
-
-    function buildFullMessageBody() {
-      const customText = document.getElementById('player-message-text').value.trim();
-      const includeStats = document.getElementById('include-stats-checkbox').checked;
-      let body = customText || '¡Hola! Probé el taller.';
-      if (includeStats) {
-        const nick = state.nickname || 'Invitado';
-        body += '\n\n— Datos del taller —\nHerrero: ' + nick + '\nOro actual: ' + formatGold(state.gold) + '\nRécord de ronda: ' + formatGold(state.bestRoundGold) + '\nVisitas: ' + formatGold(state.visitsCount);
-      }
-      return body;
-    }
-
-    function sendViaWhatsApp() {
-      const fb = document.getElementById('message-feedback-msg');
-      const phone = (document.getElementById('creator-whatsapp-input').value || state.creatorWhatsApp || '').replace(/\D/g, '');
-      if (!phone) {
-        fb.textContent = '⚠️ Primero cargá y guardá un número de WhatsApp.';
-        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
-        fb.classList.remove('hidden');
-        return;
-      }
-      state.creatorWhatsApp = phone;
-      saveState();
-      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildFullMessageBody()), '_blank', 'noopener,noreferrer');
-    }
-
-    function sendViaEmail() {
-      const fb = document.getElementById('message-feedback-msg');
-      const email = (document.getElementById('creator-email-input').value || state.creatorEmail || '').trim();
-      if (!email) {
-        fb.textContent = '⚠️ Primero cargá y guardá un correo electrónico.';
-        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
-        fb.classList.remove('hidden');
-        return;
-      }
-      state.creatorEmail = email;
-      saveState();
-      window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Forjador de Oro') + '&body=' + encodeURIComponent(buildFullMessageBody());
-    }
-
-    /* COLABORAR */
-    function openSupportModal() {
-      const input = document.getElementById('support-url-input');
-      const err = document.getElementById('support-error-msg');
-      const readyBox = document.getElementById('support-link-ready-box');
-      const emptyBox = document.getElementById('support-link-empty-box');
-      input.value = state.supportUrl || '';
-      err.classList.add('hidden');
-      if (state.supportUrl) {
-        document.getElementById('support-link-preview').textContent = state.supportUrl;
-        document.getElementById('support-external-anchor').href = state.supportUrl;
-        readyBox.classList.remove('hidden');
-        emptyBox.classList.add('hidden');
-      } else {
-        readyBox.classList.add('hidden');
-        emptyBox.classList.remove('hidden');
-      }
-      showModal('support-modal');
-    }
-
-    function saveSupportUrl() {
-      const raw = document.getElementById('support-url-input').value.trim();
-      const err = document.getElementById('support-error-msg');
-      if (!raw) {
-        state.supportUrl = '';
-        err.classList.add('hidden');
-        saveState();
-        openSupportModal();
-        return;
-      }
-      const normalized = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
-      try {
-        const parsed = new URL(normalized);
-        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error();
-        state.supportUrl = parsed.toString();
-        err.classList.add('hidden');
-        saveState();
-        openSupportModal();
-      } catch (e) {
-        err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
-        err.classList.remove('hidden');
-      }
-    }
-
-    /* RULETA */
-    function syncWheelButtons() {
-      const spinBtn = document.getElementById('spin-action-btn');
-      if (state.spinsLeft <= 0) {
-        spinBtn.disabled = true;
-        spinBtn.classList.add('opacity-50');
-        spinBtn.textContent = 'Sin tiradas disponibles';
-      } else {
-        spinBtn.disabled = false;
-        spinBtn.classList.remove('opacity-50');
-        spinBtn.textContent = '¡Girar Ruleta! (' + state.spinsLeft + ' restantes)';
-      }
-    }
-
-    function openWheelModal() {
-      document.getElementById('wheel-result-box').classList.add('hidden');
-      syncWheelButtons();
-      updateUI();
-      showModal('wheel-modal');
-    }
-
-    function closeWheelModal() {
-      if (isSpinning) return;
-      hideModal('wheel-modal');
-      updateUI();
-    }
-
-    function spinWheel() {
-      if (isSpinning || state.spinsLeft <= 0) return;
-      isSpinning = true;
-      state.spinsLeft -= 1;
-      saveState();
-      updateUI();
-
-      const spinBtn = document.getElementById('spin-action-btn');
-      spinBtn.disabled = true;
-      spinBtn.classList.add('opacity-50');
-      spinBtn.textContent = 'Girando...';
-
-      const targetIndex = Math.floor(Math.random() * 6);
-      const targetAngleMod = (360 - (targetIndex * 60 + 30) + 360) % 360;
-      const currentMod = ((currentWheelAngle % 360) + 360) % 360;
-      const extraRotation = (targetAngleMod - currentMod + 360) % 360;
-      const totalDelta = (360 * 6) + extraRotation;
-      const duration = 3200;
-      const startTime = performance.now();
-      const spinner = document.getElementById('wheel-spinner');
-
-      function animateWheel(now) {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const angleNow = currentWheelAngle + totalDelta * (1 - Math.pow(1 - progress, 3));
-        spinner.style.transform = 'rotate(' + angleNow + 'deg)';
-        if (progress < 1) {
-          spinAnimFrame = requestAnimationFrame(animateWheel);
+      function syncExitLikeUI() {
+        const iconEl = document.getElementById('exit-like-icon');
+        const labelEl = document.getElementById('exit-like-label');
+        const btnEl = document.getElementById('exit-like-btn');
+        if (!iconEl || !labelEl || !btnEl) return;
+        if (state.likedPlatform) {
+          iconEl.textContent = '❤️';
+          labelEl.textContent = '¡Like dado!';
+          btnEl.classList.add('border-rose-400/60', 'bg-rose-500/20');
         } else {
-          currentWheelAngle += totalDelta;
-          isSpinning = false;
-          const won = wheelSegments[targetIndex];
-          document.getElementById('wheel-result-box').classList.remove('hidden');
-          document.getElementById('wheel-result-title').textContent = won.emoji + ' ' + won.title;
-          document.getElementById('wheel-result-desc').textContent = won.desc;
+          iconEl.textContent = '🤍';
+          labelEl.textContent = 'Dejar Like';
+          btnEl.classList.remove('border-rose-400/60', 'bg-rose-500/20');
+        }
+      }
 
-          if (won.id === 'gold250') {
-            playSound('star');
-            state.gold += 250;
-            addHistory('Ruleta +250 ORO', '+250 ORO', 'gain');
-          } else if (won.id === 'time') {
-            playSound('star');
-            state.spinsLeft = Math.min(MAX_SPINS_PER_ROUND_CYCLE, state.spinsLeft + 1);
-            addHistory('Ruleta +1 Giro', '+1 Giro', 'gain');
-          } else if (won.id === 'spark') {
-            playSound('crash');
-            const lost = Math.min(100, state.gold);
-            state.gold -= lost;
-            addHistory('Chispa en la ruleta', '-' + lost + ' ORO', 'loss');
-          } else {
-            playSound('star');
-            addBuff(won.id);
-            addHistory('Bono: ' + won.chip, 'Acumulado', 'gain');
+      function updateUI() {
+        try {
+          const rank = getRankInfo();
+          const span = Math.max(1, rank.next - rank.min);
+          const pct = Math.max(0, Math.min(100, Math.round(((Number(state.totalTaps || 0) - rank.min) / span) * 100)));
+
+          setText('total-gold', formatGold(state.gold));
+          setText('best-record-badge', 'Récord: ' + formatGold(state.bestRoundGold));
+          setText('rank-title', rank.name);
+          setText('rank-bonus', rank.bonus);
+          setText('rank-progress-text', (Number(state.totalTaps) || 0) + ' / ' + rank.next + ' golpes');
+
+          const bar = document.getElementById('rank-progress-bar');
+          if (bar) bar.style.width = pct + '%';
+
+          setText('total-taps-display', formatGold(state.totalTaps));
+          setText('rounds-played-display', formatGold(state.roundsPlayed));
+          setText('visits-count-display', formatGold(state.visitsCount));
+          setText('floating-spins-badge', (state.spinsLeft ?? MAX_SPINS_PER_ROUND_CYCLE) + '/' + MAX_SPINS_PER_ROUND_CYCLE);
+          setText('modal-spins-counter', (state.spinsLeft ?? MAX_SPINS_PER_ROUND_CYCLE) + ' de ' + MAX_SPINS_PER_ROUND_CYCLE);
+
+          const hasPass = Boolean(state.passwordHash);
+          const lockTag = hasPass ? (state.sessionUnlocked ? ' · 🔓 Validado' : ' · 🔒 Clave') : '';
+          setText('header-user-subtitle',
+            (state.nickname ? state.nickname : 'Herrero Invitado') + lockTag + ' · ' + formatGold(state.bestRideMeters || 0) + ' m');
+          setText('profile-storage-badge',
+            state.nickname ? ('Perfil: ' + state.nickname) : 'Guardado local');
+          setText('sound-icon', state.soundEnabled !== false ? '🔊' : '🔇');
+
+          const buffBanner = document.getElementById('active-buffs-banner');
+          const hasChips = renderActiveChips('active-buffs-chips');
+          if (buffBanner) {
+            if (hasChips) {
+              buffBanner.classList.remove('hidden');
+              buffBanner.style.display = 'flex';
+            } else {
+              buffBanner.classList.add('hidden');
+              buffBanner.style.display = 'none';
+            }
           }
 
+          const modalBuffBox = document.getElementById('wheel-accumulated-box');
+          if (modalBuffBox) {
+            if (Array.isArray(state.activeBuffs) && state.activeBuffs.length > 0) {
+              renderActiveChips('modal-buff-list');
+              modalBuffBox.classList.remove('hidden');
+            } else {
+              modalBuffBox.classList.add('hidden');
+            }
+          }
+
+          syncExitLikeUI();
+          renderHistory();
+        } catch (err) {}
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          const key = normalizeProfileKey(state.nickname);
+          if (key) {
+            const profiles = readProfilesMap();
+            profiles[key] = Object.assign({}, state);
+            writeProfilesMap(profiles);
+          }
+          syncBackgroundJsonStore();
+        } catch (err) {}
+      }
+
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object') {
+              state = Object.assign(createDefaultState(), parsed);
+              if (!state.creatorWhatsApp) state.creatorWhatsApp = '5492364502082';
+              if (!state.creatorEmail) state.creatorEmail = 'sbocontrol@gmail.com';
+              if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
+              if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+              if (!Array.isArray(state.history)) state.history = [];
+              if (typeof state.likedPlatform !== 'boolean') state.likedPlatform = false;
+              if (typeof state.lastExitComment !== 'string') state.lastExitComment = '';
+              if (typeof state.passwordHash !== 'string') state.passwordHash = '';
+              if (typeof state.sessionUnlocked !== 'boolean') state.sessionUnlocked = !state.passwordHash;
+            }
+          }
+        } catch (err) {
+          state = createDefaultState();
+        }
+        state.visitsCount = (Number(state.visitsCount) || 0) + 1;
+        saveState();
+        updateUI();
+      }
+
+      function applyFrameSelection(mode) {
+        const frames = Array.from(document.querySelectorAll('.selectable-frame'));
+        selectedMode = mode || null;
+        frames.forEach(function (frame) {
+          const active = selectedMode !== null && frame.dataset.mode === selectedMode;
+          frame.classList.toggle('is-selected', active);
+        });
+        setText('frame-hint-text', selectedMode
+          ? 'Luz encendida · Tocá de nuevo para entrar'
+          : 'Todos apagados · Tocá un marco para encender');
+        try {
+          if (selectedMode) {
+            localStorage.setItem(SELECTED_FRAME_KEY, selectedMode);
+          } else {
+            localStorage.removeItem(SELECTED_FRAME_KEY);
+          }
+        } catch (err) {}
+      }
+
+      function initFrames() {
+        const frames = Array.from(document.querySelectorAll('.selectable-frame'));
+        let savedMode = null;
+        try {
+          const m = localStorage.getItem(SELECTED_FRAME_KEY);
+          if (m && frames.some(function (f) { return f.dataset.mode === m; })) {
+            savedMode = m;
+          }
+        } catch (err) {}
+        applyFrameSelection(savedMode);
+
+        frames.forEach(function (frame) {
+          frame.addEventListener('click', function (e) {
+            const mode = frame.dataset.mode;
+            const isAlreadySelected = selectedMode === mode && frame.classList.contains('is-selected');
+            if (!isAlreadySelected) {
+              e.preventDefault();
+              applyFrameSelection(mode);
+            } else {
+              applyFrameSelection(mode);
+            }
+          });
+        });
+      }
+
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioCtor = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtor) audioCtx = new AudioCtor();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      }
+
+      function playSound(type) {
+        if (state.soundEnabled === false) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          if (type === 'star') {
+            osc.frequency.setValueAtTime(783.99, now);
+            osc.frequency.setValueAtTime(987.77, now + 0.05);
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.start(now); osc.stop(now + 0.15);
+          } else if (type === 'crash') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(175, now);
+            osc.frequency.exponentialRampToValueAtTime(65, now + 0.22);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            osc.start(now); osc.stop(now + 0.24);
+          }
+        } catch (err) {}
+      }
+
+      function toggleSound() {
+        state.soundEnabled = state.soundEnabled === false ? true : false;
+        saveState();
+        updateUI();
+      }
+
+      function showModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
+
+      function hideModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+
+      /* SALIDA */
+      function openExitModal() {
+        const nick = state.nickname ? state.nickname : 'Herrero';
+        setText('exit-farewell-sub',
+          '¡Gracias por haber andado por el taller, ' + nick + '! Tu oro (' + formatGold(state.gold) + ' ORO) queda guardado acá.');
+        const commentInput = document.getElementById('exit-comment-input');
+        if (commentInput) commentInput.value = state.lastExitComment || '';
+        const fb = document.getElementById('exit-feedback-msg');
+        if (fb) fb.classList.add('hidden');
+        const closedNotice = document.getElementById('exit-closed-notice');
+        if (closedNotice) closedNotice.classList.add('hidden');
+
+        setText('exit-support-hint', state.supportUrl
+          ? 'Tenés un enlace de colaboración listo para aportar si lo deseás.'
+          : 'Recordá que podés dejar tu aporte o configurar tu link de colaboración.');
+
+        syncExitLikeUI();
+        showModal('exit-modal');
+      }
+
+      function toggleExitLike() {
+        state.likedPlatform = !state.likedPlatform;
+        if (state.likedPlatform) {
+          playSound('star');
+          addHistory('Dejó un ❤️ a la plataforma', 'Like', 'gain');
+        }
+        saveState();
+        updateUI();
+        const fb = document.getElementById('exit-feedback-msg');
+        if (fb) {
+          fb.textContent = state.likedPlatform
+            ? '¡Gracias por ese like! Quedó registrado en tu bitácora.'
+            : 'Like quitado.';
+          fb.className = 'mt-1.5 text-[11px] font-bold text-rose-300';
+          fb.classList.remove('hidden');
+        }
+      }
+
+      function buildExitFeedbackMessage() {
+        const commentEl = document.getElementById('exit-comment-input');
+        const comment = commentEl ? commentEl.value.trim() : '';
+        state.lastExitComment = comment;
+        saveState();
+
+        const likeStatus = state.likedPlatform ? '❤️ Sí, dejó Like' : '🤍 Sin marcar like';
+        const nick = state.nickname || 'Invitado';
+        return '¡Hola! Estuve en Forjador de Oro (' + nick + ') y quería dejarte mi feedback de salida.\n' +
+          'Like: ' + likeStatus + '\n' +
+          'Comentario: ' + (comment || '(Sin comentario escrito)') + '\n' +
+          'Oro actual: ' + formatGold(state.gold) + ' ORO · Visitas: ' + formatGold(state.visitsCount);
+      }
+
+      function sendExitViaWhatsApp() {
+        const fb = document.getElementById('exit-feedback-msg');
+        const phone = (state.creatorWhatsApp || '').replace(/\D/g, '');
+        if (!phone) {
+          if (fb) {
+            fb.textContent = '⚠️ Cargá un WhatsApp en el botón Mensaje para enviarlo.';
+            fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
+            fb.classList.remove('hidden');
+          }
+          return;
+        }
+        window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildExitFeedbackMessage()), '_blank', 'noopener,noreferrer');
+        if (fb) {
+          fb.textContent = '✅ Abriendo WhatsApp con tu like y comentario...';
+          fb.className = 'mt-1.5 text-[11px] font-bold text-emerald-400';
+          fb.classList.remove('hidden');
+        }
+      }
+
+      function sendExitViaEmail() {
+        const fb = document.getElementById('exit-feedback-msg');
+        const email = (state.creatorEmail || '').trim();
+        if (!email) {
+          if (fb) {
+            fb.textContent = '⚠️ Cargá un correo en el botón Mensaje para enviarlo.';
+            fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
+            fb.classList.remove('hidden');
+          }
+          return;
+        }
+        window.location.href = 'mailto:' + email +
+          '?subject=' + encodeURIComponent('Comentario de salida — Forjador de Oro') +
+          '&body=' + encodeURIComponent(buildExitFeedbackMessage());
+        if (fb) {
+          fb.textContent = '✅ Abriendo tu correo con tu comentario...';
+          fb.className = 'mt-1.5 text-[11px] font-bold text-indigo-300';
+          fb.classList.remove('hidden');
+        }
+      }
+
+      function goToSupportFromExit() {
+        const commentEl = document.getElementById('exit-comment-input');
+        const comment = commentEl ? commentEl.value.trim() : '';
+        if (comment) {
+          state.lastExitComment = comment;
+          saveState();
+        }
+        hideModal('exit-modal');
+        openSupportModal();
+      }
+
+      function confirmExitPlatform() {
+        const commentEl = document.getElementById('exit-comment-input');
+        const comment = commentEl ? commentEl.value.trim() : '';
+        if (comment) state.lastExitComment = comment;
+        saveState();
+
+        try {
+          window.close();
+        } catch (err) {}
+
+        setTimeout(function () {
+          const closedNotice = document.getElementById('exit-closed-notice');
+          if (closedNotice) closedNotice.classList.remove('hidden');
+        }, 150);
+      }
+
+      /* ACCESO HERRERO + PASSWORD */
+      function setAuthFeedback(text, isOk) {
+        const fb = document.getElementById('auth-feedback-msg');
+        if (!fb) return;
+        fb.textContent = text;
+        fb.className = 'mt-2 text-[11px] font-bold ' + (isOk ? 'text-emerald-400' : 'text-rose-400');
+        fb.classList.remove('hidden');
+      }
+
+      function openNicknameModal() {
+        const nickInput = document.getElementById('nickname-input');
+        const passInput = document.getElementById('access-password-input');
+        const fb = document.getElementById('auth-feedback-msg');
+        if (nickInput) nickInput.value = state.nickname || '';
+        if (passInput) passInput.value = '';
+        if (fb) fb.classList.add('hidden');
+        setText('auth-status-text', state.passwordHash
+          ? ('Etiqueta "' + (state.nickname || 'Herrero') + '" con clave. Validá para guardar.')
+          : 'Ingresá tu etiqueta y una contraseña (mínimo 4 caracteres) para validar.');
+        showModal('nickname-modal');
+      }
+
+      function saveNickname() {
+        const nickInput = document.getElementById('nickname-input');
+        const passInput = document.getElementById('access-password-input');
+        const nick = nickInput ? nickInput.value.trim().slice(0, 24) : '';
+        const rawPass = passInput ? passInput.value : '';
+
+        if (!nick) {
+          setAuthFeedback('⚠️ Escribí una etiqueta de herrero.', false);
+          return;
+        }
+        if (rawPass.trim().length < 4) {
+          setAuthFeedback('⚠️ Escribí una contraseña de al menos 4 caracteres.', false);
+          return;
+        }
+
+        const incomingHash = hashSecret(rawPass.trim());
+        const key = normalizeProfileKey(nick);
+        const profiles = readProfilesMap();
+        const existingProfile = profiles[key];
+
+        if (existingProfile && existingProfile.passwordHash) {
+          if (existingProfile.passwordHash !== incomingHash) {
+            setAuthFeedback('❌ Contraseña incorrecta para "' + nick + '".', false);
+            return;
+          }
+          state = Object.assign(createDefaultState(), existingProfile, {
+            nickname: nick,
+            passwordHash: incomingHash,
+            sessionUnlocked: true
+          });
+          addHistory('Acceso validado (' + nick + ')', 'OK', 'gain');
           saveState();
           updateUI();
-          syncWheelButtons();
+          setAuthFeedback('✅ Acceso validado y datos guardados.', true);
+          return;
+        }
+
+        if (state.passwordHash && normalizeProfileKey(state.nickname) === key && state.passwordHash !== incomingHash) {
+          setAuthFeedback('❌ Esa contraseña no coincide con la clave actual de tu etiqueta.', false);
+          return;
+        }
+
+        state.nickname = nick;
+        state.passwordHash = incomingHash;
+        state.sessionUnlocked = true;
+        addHistory('Acceso creado y validado (' + nick + ')', 'Clave OK', 'gain');
+        saveState();
+        updateUI();
+        setAuthFeedback('✅ Etiqueta y clave validadas. Datos guardados.', true);
+      }
+
+      function lockSession() {
+        if (!state.passwordHash) {
+          setAuthFeedback('⚠️ Primero creá una contraseña para bloquear la sesión.', false);
+          return;
+        }
+        state.sessionUnlocked = false;
+        saveState();
+        updateUI();
+        const passInput = document.getElementById('access-password-input');
+        if (passInput) passInput.value = '';
+        setAuthFeedback('🔒 Sesión bloqueada. Volvé a validar con tu clave.', false);
+      }
+
+      /* REINICIAR PARTIDA COMPLETA */
+      function openResetModal() {
+        showModal('reset-modal');
+      }
+
+      function resetFullGame() {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(SELECTED_FRAME_KEY);
+        } catch (err) {}
+        state = createDefaultState();
+        state.visitsCount = 1;
+        currentWheelAngle = 0;
+
+        const spinner = document.getElementById('wheel-spinner');
+        if (spinner) spinner.style.transform = 'rotate(0deg)';
+        const wheelBtn = document.getElementById('open-wheel-btn');
+        if (wheelBtn) {
+          wheelBtn.style.left = '';
+          wheelBtn.style.right = '10px';
+          wheelBtn.style.top = '24%';
+        }
+
+        saveState();
+        applyFrameSelection(null);
+        updateUI();
+        hideModal('reset-modal');
+      }
+
+      /* MENSAJE */
+      function openMessageModal() {
+        const waInput = document.getElementById('creator-whatsapp-input');
+        const mailInput = document.getElementById('creator-email-input');
+        if (waInput) waInput.value = state.creatorWhatsApp || '';
+        if (mailInput) mailInput.value = state.creatorEmail || '';
+        const fb = document.getElementById('message-feedback-msg');
+        if (fb) fb.classList.add('hidden');
+        const msgEl = document.getElementById('player-message-text');
+        if (msgEl && !msgEl.value.trim()) {
+          msgEl.value = '¡Hola! Estuve probando el taller.';
+        }
+        showModal('message-modal');
+      }
+
+      function saveContactConfig() {
+        const waInput = document.getElementById('creator-whatsapp-input');
+        const mailInput = document.getElementById('creator-email-input');
+        state.creatorWhatsApp = waInput ? waInput.value.replace(/\D/g, '') : '';
+        state.creatorEmail = mailInput ? mailInput.value.trim() : '';
+        saveState();
+        const fb = document.getElementById('message-feedback-msg');
+        if (fb) {
+          fb.textContent = '✅ Contacto guardado en este dispositivo.';
+          fb.className = 'mt-2 text-[11px] font-bold text-emerald-400';
+          fb.classList.remove('hidden');
         }
       }
-      spinAnimFrame = requestAnimationFrame(animateWheel);
-    }
 
-    function initDraggableWheelButton() {
-      const btn = document.getElementById('open-wheel-btn');
-      let isDragging = false;
-      let hasMoved = false;
-      let startX = 0, startY = 0;
-      let initialLeft = 0, initialTop = 0;
-
-      if (state.wheelPos && typeof state.wheelPos.left === 'number' && typeof state.wheelPos.top === 'number') {
-        btn.style.right = 'auto';
-        btn.style.left = state.wheelPos.left + 'px';
-        btn.style.top = state.wheelPos.top + 'px';
+      function buildFullMessageBody() {
+        const msgEl = document.getElementById('player-message-text');
+        const statsEl = document.getElementById('include-stats-checkbox');
+        const customText = msgEl ? msgEl.value.trim() : '';
+        const includeStats = statsEl ? statsEl.checked : false;
+        let body = customText || '¡Hola! Probé el taller.';
+        if (includeStats) {
+          const nick = state.nickname || 'Invitado';
+          body += '\n\n— Datos del taller —\nHerrero: ' + nick + '\nOro actual: ' + formatGold(state.gold) + '\nRécord de ronda: ' + formatGold(state.bestRoundGold) + '\nVisitas: ' + formatGold(state.visitsCount);
+        }
+        return body;
       }
 
-      const onStart = (clientX, clientY) => {
-        const rect = btn.getBoundingClientRect();
-        isDragging = true;
-        hasMoved = false;
-        startX = clientX;
-        startY = clientY;
-        initialLeft = rect.left;
-        initialTop = rect.top;
-        btn.classList.add('is-dragging');
-      };
-
-      const onMove = (clientX, clientY) => {
-        if (!isDragging) return;
-        const dx = clientX - startX;
-        const dy = clientY - startY;
-        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) hasMoved = true;
-        if (hasMoved) {
-          const maxLeft = window.innerWidth - btn.offsetWidth - 4;
-          const maxTop = window.innerHeight - btn.offsetHeight - 4;
-          btn.style.right = 'auto';
-          btn.style.left = Math.max(4, Math.min(maxLeft, initialLeft + dx)) + 'px';
-          btn.style.top = Math.max(4, Math.min(maxTop, initialTop + dy)) + 'px';
+      function sendViaWhatsApp() {
+        const fb = document.getElementById('message-feedback-msg');
+        const waInput = document.getElementById('creator-whatsapp-input');
+        const phone = ((waInput ? waInput.value : '') || state.creatorWhatsApp || '').replace(/\D/g, '');
+        if (!phone) {
+          if (fb) {
+            fb.textContent = '⚠️ Primero cargá y guardá un número de WhatsApp.';
+            fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+            fb.classList.remove('hidden');
+          }
+          return;
         }
-      };
+        state.creatorWhatsApp = phone;
+        saveState();
+        window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildFullMessageBody()), '_blank', 'noopener,noreferrer');
+      }
 
-      const onEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        btn.classList.remove('is-dragging');
-        if (hasMoved) {
-          state.wheelPos = { left: parseFloat(btn.style.left), top: parseFloat(btn.style.top) };
-          saveState();
+      function sendViaEmail() {
+        const fb = document.getElementById('message-feedback-msg');
+        const mailInput = document.getElementById('creator-email-input');
+        const email = ((mailInput ? mailInput.value : '') || state.creatorEmail || '').trim();
+        if (!email) {
+          if (fb) {
+            fb.textContent = '⚠️ Primero cargá y guardá un correo electrónico.';
+            fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+            fb.classList.remove('hidden');
+          }
+          return;
+        }
+        state.creatorEmail = email;
+        saveState();
+        window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Forjador de Oro') + '&body=' + encodeURIComponent(buildFullMessageBody());
+      }
+
+      /* COLABORAR */
+      function openSupportModal() {
+        const input = document.getElementById('support-url-input');
+        const err = document.getElementById('support-error-msg');
+        const readyBox = document.getElementById('support-link-ready-box');
+        const emptyBox = document.getElementById('support-link-empty-box');
+        if (input) input.value = state.supportUrl || '';
+        if (err) err.classList.add('hidden');
+        if (state.supportUrl) {
+          setText('support-link-preview', state.supportUrl);
+          const anchor = document.getElementById('support-external-anchor');
+          if (anchor) anchor.href = state.supportUrl;
+          if (readyBox) readyBox.classList.remove('hidden');
+          if (emptyBox) emptyBox.classList.add('hidden');
         } else {
-          openWheelModal();
+          if (readyBox) readyBox.classList.add('hidden');
+          if (emptyBox) emptyBox.classList.remove('hidden');
         }
-      };
+        showModal('support-modal');
+      }
 
-      btn.addEventListener('touchstart', (e) => { if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
-      window.addEventListener('touchmove', (e) => { if (isDragging && e.touches.length === 1) { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-      window.addEventListener('touchend', onEnd);
-      btn.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
-      window.addEventListener('mousemove', (e) => { if (isDragging) onMove(e.clientX, e.clientY); });
-      window.addEventListener('mouseup', onEnd);
-    }
+      function saveSupportUrl() {
+        const input = document.getElementById('support-url-input');
+        const err = document.getElementById('support-error-msg');
+        const raw = input ? input.value.trim() : '';
+        if (!raw) {
+          state.supportUrl = '';
+          if (err) err.classList.add('hidden');
+          saveState();
+          openSupportModal();
+          return;
+        }
+        const normalized = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+        try {
+          const parsed = new URL(normalized);
+          if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error();
+          state.supportUrl = parsed.toString();
+          if (err) err.classList.add('hidden');
+          saveState();
+          openSupportModal();
+        } catch (e) {
+          if (err) {
+            err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
+            err.classList.remove('hidden');
+          }
+        }
+      }
 
-    document.getElementById('open-exit-btn').addEventListener('click', openExitModal);
-    document.getElementById('close-exit-btn').addEventListener('click', () => hideModal('exit-modal'));
-    document.getElementById('exit-stay-btn').addEventListener('click', () => hideModal('exit-modal'));
-    document.getElementById('exit-like-btn').addEventListener('click', toggleExitLike);
-    document.getElementById('exit-send-wa-btn').addEventListener('click', sendExitViaWhatsApp);
-    document.getElementById('exit-send-mail-btn').addEventListener('click', sendExitViaEmail);
-    document.getElementById('exit-go-support-btn').addEventListener('click', goToSupportFromExit);
-    document.getElementById('exit-confirm-btn').addEventListener('click', confirmExitPlatform);
+      /* RULETA */
+      function syncWheelButtons() {
+        const spinBtn = document.getElementById('spin-action-btn');
+        if (!spinBtn) return;
+        const spins = Number(state.spinsLeft) || 0;
+        if (spins <= 0) {
+          spinBtn.disabled = true;
+          spinBtn.classList.add('opacity-50');
+          spinBtn.textContent = 'Sin tiradas disponibles';
+        } else {
+          spinBtn.disabled = false;
+          spinBtn.classList.remove('opacity-50');
+          spinBtn.textContent = '¡Girar Ruleta! (' + spins + ' restantes)';
+        }
+      }
 
-    document.getElementById('open-nick-btn').addEventListener('click', openNicknameModal);
-    document.getElementById('close-nick-btn').addEventListener('click', () => hideModal('nickname-modal'));
-    document.getElementById('save-nick-btn').addEventListener('click', saveNickname);
-    document.getElementById('sound-toggle').addEventListener('click', toggleSound);
-    document.getElementById('open-reset-btn').addEventListener('click', openResetModal);
-    document.getElementById('close-reset-btn').addEventListener('click', () => hideModal('reset-modal'));
-    document.getElementById('cancel-reset-btn').addEventListener('click', () => hideModal('reset-modal'));
-    document.getElementById('confirm-reset-btn').addEventListener('click', resetFullGame);
-    document.getElementById('open-msg-btn').addEventListener('click', openMessageModal);
-    document.getElementById('close-msg-btn').addEventListener('click', () => hideModal('message-modal'));
-    document.getElementById('save-contact-btn').addEventListener('click', saveContactConfig);
-    document.getElementById('send-wa-btn').addEventListener('click', sendViaWhatsApp);
-    document.getElementById('send-mail-btn').addEventListener('click', sendViaEmail);
-    document.getElementById('open-sup-btn').addEventListener('click', openSupportModal);
-    document.getElementById('close-sup-btn').addEventListener('click', () => hideModal('support-modal'));
-    document.getElementById('close-sup-btn-2').addEventListener('click', () => hideModal('support-modal'));
-    document.getElementById('save-sup-btn').addEventListener('click', saveSupportUrl);
-    document.getElementById('close-wheel-btn').addEventListener('click', closeWheelModal);
-    document.getElementById('close-wheel-btn-2').addEventListener('click', closeWheelModal);
-    document.getElementById('spin-action-btn').addEventListener('click', spinWheel);
+      function openWheelModal() {
+        const resBox = document.getElementById('wheel-result-box');
+        if (resBox) resBox.classList.add('hidden');
+        syncWheelButtons();
+        updateUI();
+        showModal('wheel-modal');
+      }
 
-    loadState();
-    initFrames();
-    initDraggableWheelButton();
+      function closeWheelModal() {
+        if (isSpinning) return;
+        hideModal('wheel-modal');
+        updateUI();
+      }
+
+      function spinWheel() {
+        if (isSpinning || (Number(state.spinsLeft) || 0) <= 0) return;
+        isSpinning = true;
+        state.spinsLeft = Math.max(0, (Number(state.spinsLeft) || 0) - 1);
+        saveState();
+        updateUI();
+
+        const spinBtn = document.getElementById('spin-action-btn');
+        if (spinBtn) {
+          spinBtn.disabled = true;
+          spinBtn.classList.add('opacity-50');
+          spinBtn.textContent = 'Girando...';
+        }
+
+        const targetIndex = Math.floor(Math.random() * 6);
+        const targetAngleMod = (360 - (targetIndex * 60 + 30) + 360) % 360;
+        const currentMod = ((currentWheelAngle % 360) + 360) % 360;
+        const extraRotation = (targetAngleMod - currentMod + 360) % 360;
+        const totalDelta = (360 * 6) + extraRotation;
+        const duration = 3200;
+        const startTime = performance.now();
+        const spinner = document.getElementById('wheel-spinner');
+
+        function animateWheel(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const angleNow = currentWheelAngle + totalDelta * (1 - Math.pow(1 - progress, 3));
+          if (spinner) spinner.style.transform = 'rotate(' + angleNow + 'deg)';
+          if (progress < 1) {
+            spinAnimFrame = requestAnimationFrame(animateWheel);
+          } else {
+            currentWheelAngle += totalDelta;
+            isSpinning = false;
+            const won = wheelSegments[targetIndex];
+            const resBox = document.getElementById('wheel-result-box');
+            if (resBox) resBox.classList.remove('hidden');
+            setText('wheel-result-title', won.emoji + ' ' + won.title);
+            setText('wheel-result-desc', won.desc);
+
+            if (won.id === 'gold250') {
+              playSound('star');
+              state.gold = (Number(state.gold) || 0) + 250;
+              addHistory('Ruleta +250 ORO', '+250 ORO', 'gain');
+            } else if (won.id === 'time') {
+              playSound('star');
+              state.spinsLeft = Math.min(MAX_SPINS_PER_ROUND_CYCLE, (Number(state.spinsLeft) || 0) + 1);
+              addHistory('Ruleta +1 Giro', '+1 Giro', 'gain');
+            } else if (won.id === 'spark') {
+              playSound('crash');
+              const lost = Math.min(100, Number(state.gold) || 0);
+              state.gold = Math.max(0, (Number(state.gold) || 0) - lost);
+              addHistory('Chispa en la ruleta', '-' + lost + ' ORO', 'loss');
+            } else {
+              playSound('star');
+              addBuff(won.id);
+              addHistory('Bono: ' + won.chip, 'Acumulado', 'gain');
+            }
+
+            saveState();
+            updateUI();
+            syncWheelButtons();
+          }
+        }
+        spinAnimFrame = requestAnimationFrame(animateWheel);
+      }
+
+      function initDraggableWheelButton() {
+        const btn = document.getElementById('open-wheel-btn');
+        if (!btn) return;
+        let isDragging = false;
+        let hasMoved = false;
+        let startX = 0, startY = 0;
+        let initialLeft = 0, initialTop = 0;
+
+        if (state.wheelPos && typeof state.wheelPos.left === 'number' && typeof state.wheelPos.top === 'number') {
+          btn.style.right = 'auto';
+          btn.style.left = state.wheelPos.left + 'px';
+          btn.style.top = state.wheelPos.top + 'px';
+        }
+
+        const onStart = function (clientX, clientY) {
+          const rect = btn.getBoundingClientRect();
+          isDragging = true;
+          hasMoved = false;
+          startX = clientX;
+          startY = clientY;
+          initialLeft = rect.left;
+          initialTop = rect.top;
+          btn.classList.add('is-dragging');
+        };
+
+        const onMove = function (clientX, clientY) {
+          if (!isDragging) return;
+          const dx = clientX - startX;
+          const dy = clientY - startY;
+          if (Math.abs(dx) > 6 || Math.abs(dy) > 6) hasMoved = true;
+          if (hasMoved) {
+            const maxLeft = window.innerWidth - btn.offsetWidth - 4;
+            const maxTop = window.innerHeight - btn.offsetHeight - 4;
+            btn.style.right = 'auto';
+            btn.style.left = Math.max(4, Math.min(maxLeft, initialLeft + dx)) + 'px';
+            btn.style.top = Math.max(4, Math.min(maxTop, initialTop + dy)) + 'px';
+          }
+        };
+
+        const onEnd = function () {
+          if (!isDragging) return;
+          isDragging = false;
+          btn.classList.remove('is-dragging');
+          if (hasMoved) {
+            state.wheelPos = { left: parseFloat(btn.style.left), top: parseFloat(btn.style.top) };
+            saveState();
+          } else {
+            openWheelModal();
+          }
+        };
+
+        btn.addEventListener('touchstart', function (e) {
+          if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        window.addEventListener('touchmove', function (e) {
+          if (isDragging && e.touches.length === 1) {
+            e.preventDefault();
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: false });
+        window.addEventListener('touchend', onEnd);
+        btn.addEventListener('mousedown', function (e) { onStart(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', function (e) { if (isDragging) onMove(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', onEnd);
+      }
+
+      function onClick(id, handler) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handler);
+      }
+
+      function bindAllEvents() {
+        onClick('open-exit-btn', openExitModal);
+        onClick('close-exit-btn', function () { hideModal('exit-modal'); });
+        onClick('exit-stay-btn', function () { hideModal('exit-modal'); });
+        onClick('exit-like-btn', toggleExitLike);
+        onClick('exit-send-wa-btn', sendExitViaWhatsApp);
+        onClick('exit-send-mail-btn', sendExitViaEmail);
+        onClick('exit-go-support-btn', goToSupportFromExit);
+        onClick('exit-confirm-btn', confirmExitPlatform);
+
+        onClick('open-nick-btn', openNicknameModal);
+        onClick('close-nick-btn', function () { hideModal('nickname-modal'); });
+        onClick('save-nick-btn', saveNickname);
+        onClick('lock-session-btn', lockSession);
+
+        onClick('sound-toggle', toggleSound);
+        onClick('open-reset-btn', openResetModal);
+        onClick('close-reset-btn', function () { hideModal('reset-modal'); });
+        onClick('cancel-reset-btn', function () { hideModal('reset-modal'); });
+        onClick('confirm-reset-btn', resetFullGame);
+        onClick('open-msg-btn', openMessageModal);
+        onClick('close-msg-btn', function () { hideModal('message-modal'); });
+        onClick('save-contact-btn', saveContactConfig);
+        onClick('send-wa-btn', sendViaWhatsApp);
+        onClick('send-mail-btn', sendViaEmail);
+        onClick('open-sup-btn', openSupportModal);
+        onClick('close-sup-btn', function () { hideModal('support-modal'); });
+        onClick('close-sup-btn-2', function () { hideModal('support-modal'); });
+        onClick('save-sup-btn', saveSupportUrl);
+        onClick('close-wheel-btn', closeWheelModal);
+        onClick('close-wheel-btn-2', closeWheelModal);
+        onClick('spin-action-btn', spinWheel);
+      }
+
+      function boot() {
+        try { bindAllEvents(); } catch (err) {}
+        try { loadState(); } catch (err) {}
+        try { initFrames(); } catch (err) {}
+        try { initDraggableWheelButton(); } catch (err) {}
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
   </script>
 </body>
 </html>
