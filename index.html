@@ -65,6 +65,15 @@
       }
     }
 
+    @keyframes exitModalPop {
+      0% { transform: scale(0.92) translateY(10px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .exit-modal-card {
+      animation: exitModalPop 0.22s ease-out forwards;
+    }
+
     .floating-roulette-btn {
       animation: wheelFloat 2.8s ease-in-out infinite;
       pointer-events: auto !important;
@@ -169,25 +178,29 @@
 
   <div>
     <!-- HEADER -->
-    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 shadow-lg">
-      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-3.5 py-3 shadow-lg gap-2">
+      <div class="flex items-center gap-2 min-w-0 flex-1">
         <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black shrink-0">
           🔨
         </div>
         <div class="min-w-0 flex-1">
-          <h1 class="text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">Forjador de Oro</h1>
+          <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">Forjador de Oro</h1>
           <p id="header-user-subtitle" class="text-[11px] text-slate-400 truncate">Herrero Invitado · Arcade</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button type="button" id="open-nick-btn" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition" title="Apodo del herrero">
+      <div class="flex items-center gap-1 shrink-0">
+        <button type="button" id="open-nick-btn" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 flex items-center justify-center transition text-xs" title="Apodo del herrero">
           🏷️
         </button>
-        <button type="button" id="sound-toggle" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition" title="Sonido">
+        <button type="button" id="sound-toggle" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition text-xs" title="Sonido">
           <span id="sound-icon">🔊</span>
         </button>
-        <button type="button" id="open-reset-btn" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 flex items-center justify-center transition" title="Reiniciar partida">
+        <button type="button" id="open-reset-btn" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 flex items-center justify-center transition text-xs" title="Reiniciar partida">
           🔄
+        </button>
+        <button type="button" id="open-exit-btn" class="px-2.5 h-8 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center gap-1 transition text-[11px] font-extrabold" title="Salir de la plataforma">
+          <span>🚪</span>
+          <span>Salir</span>
         </button>
       </div>
     </header>
@@ -266,7 +279,6 @@
       </div>
 
       <div class="grid grid-cols-2 gap-2.5">
-        <!-- 1. EL YUNQUE (Ámbar/Dorado) -->
         <a href="yunque.html" data-mode="yunque" class="selectable-frame group bg-slate-900/90 hover:bg-slate-800/90 border border-amber-500/40 rounded-2xl p-3.5 shadow-lg active:scale-95 flex flex-col justify-between">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
@@ -281,7 +293,6 @@
           </div>
         </a>
 
-        <!-- 2. RODILLOS (Blanco brillante) -->
         <a href="rodillos.html" data-mode="rodillos" class="selectable-frame group bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 rounded-2xl p-3.5 shadow-lg active:scale-95 flex flex-col justify-between">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
@@ -296,7 +307,6 @@
           </div>
         </a>
 
-        <!-- 3. PASEO DEL TALLER (Verde) -->
         <a href="paseo.html" data-mode="paseos" class="selectable-frame group bg-slate-900/90 hover:bg-slate-800/90 border border-emerald-500/35 hover:border-emerald-400/60 rounded-2xl p-3.5 shadow-lg active:scale-95 flex flex-col justify-between">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
@@ -311,7 +321,6 @@
           </div>
         </a>
 
-        <!-- 4. TIENDA DEL TALLER (Azul celestial) -->
         <a href="tienda.html" data-mode="tienda" class="selectable-frame group bg-slate-900/90 hover:bg-slate-800/90 border border-sky-500/35 hover:border-sky-400/60 rounded-2xl p-3.5 shadow-lg active:scale-95 flex flex-col justify-between">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
@@ -338,6 +347,78 @@
         <div class="text-slate-500 italic text-[11px]">Todavía no hay registros en la bitácora.</div>
       </div>
     </section>
+  </div>
+
+  <!-- MODAL FLOTANTE DE SALIDA -->
+  <div id="exit-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 items-center justify-center p-4 overflow-y-auto">
+    <div class="exit-modal-card bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-2 border-amber-400/70 rounded-3xl p-5 w-full max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.85)] my-auto relative">
+      <button type="button" id="close-exit-btn" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold text-sm">✕</button>
+
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-2xl mx-auto mb-2">
+          👋
+        </div>
+        <h3 class="text-lg font-black text-amber-400 tracking-tight"> ¡Gracias! </h3>
+        <p id="exit-farewell-sub" class="text-xs text-slate-300 mt-1 leading-relaxed">
+          Qué lindo que te hayas dado una vuelta por acá. Tu progreso queda guardado en este dispositivo.
+        </p>
+      </div>
+
+      <!-- LIKE + COMENTARIO RÁPIDO -->
+      <div class="mt-4 p-3 rounded-2xl bg-slate-950/80 border border-slate-800">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-[11px] font-bold text-slate-300">¿Te gustó la experiencia?</span>
+          <button type="button" id="exit-like-btn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-extrabold text-rose-300 flex items-center gap-1.5 transition active:scale-95">
+            <span id="exit-like-icon">🤍</span>
+            <span id="exit-like-label">Dejar Like</span>
+          </button>
+        </div>
+
+        <label class="block text-[11px] font-bold text-slate-400 mt-3 mb-1">Dejá tu comentario antes de irte</label>
+        <textarea id="exit-comment-input" rows="2" placeholder="Contanos qué te pareció o qué sumaría..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white text-xs focus:outline-none focus:border-amber-400"></textarea>
+
+        <div class="grid grid-cols-2 gap-2 mt-2.5">
+          <button type="button" id="exit-send-wa-btn" class="py-2 px-2.5 rounded-xl bg-emerald-500/90 hover:bg-emerald-400 text-slate-950 font-black text-[11px] flex items-center justify-center gap-1 transition">
+            <span>💬</span>
+            <span>Enviar por WA</span>
+          </button>
+          <button type="button" id="exit-send-mail-btn" class="py-2 px-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-[11px] flex items-center justify-center gap-1 transition">
+            <span>📧</span>
+            <span>Enviar correo</span>
+          </button>
+        </div>
+        <p id="exit-feedback-msg" class="hidden mt-1.5 text-[11px] font-bold text-emerald-400"></p>
+      </div>
+
+      <!-- RECORDATORIO DE COLABORACIÓN -->
+      <div class="mt-3 p-3 rounded-2xl bg-amber-500/10 border border-amber-400/35 flex items-center justify-between gap-2.5">
+        <div class="min-w-0">
+          <span class="text-xs font-black text-amber-300 block">☕ ¿Querés colaborar?</span>
+          <span id="exit-support-hint" class="text-[10px] text-slate-300 block leading-snug">
+            Si te sirvió o te divirtió, podés dejar tu aporte voluntario.
+          </span>
+        </div>
+        <button type="button" id="exit-go-support-btn" class="px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] shrink-0 transition active:scale-95">
+          Colaborar
+        </button>
+      </div>
+
+      <!-- MENSAJE POST-INTENTO DE SALIDA (SI EL NAVEGADOR BLOQUEA window.close) -->
+      <div id="exit-closed-notice" class="hidden mt-3 p-3 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-center">
+        <p class="text-xs font-extrabold text-emerald-300">¡Hasta la próxima en el taller!</p>
+        <p class="text-[11px] text-slate-300 mt-0.5">Ya podés cerrar esta pestaña o volver cuando gustes.</p>
+      </div>
+
+      <!-- ACCIONES FINALES -->
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <button type="button" id="exit-stay-btn" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition">
+          Quedarme un rato
+        </button>
+        <button type="button" id="exit-confirm-btn" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-slate-950 font-black text-xs shadow-lg transition active:scale-95">
+          Salir ahora
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL MENSAJE -->
@@ -541,7 +622,9 @@
       soundEnabled: true,
       activeBuffs: [],
       spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
-      wheelPos: null
+      wheelPos: null,
+      likedPlatform: false,
+      lastExitComment: ''
     };
 
     let selectedMode = null;
@@ -609,6 +692,22 @@
       }).join('');
     }
 
+    function syncExitLikeUI() {
+      const iconEl = document.getElementById('exit-like-icon');
+      const labelEl = document.getElementById('exit-like-label');
+      const btnEl = document.getElementById('exit-like-btn');
+      if (!iconEl || !labelEl || !btnEl) return;
+      if (state.likedPlatform) {
+        iconEl.textContent = '❤️';
+        labelEl.textContent = '¡Like dado!';
+        btnEl.classList.add('border-rose-400/60', 'bg-rose-500/20');
+      } else {
+        iconEl.textContent = '🤍';
+        labelEl.textContent = 'Dejar Like';
+        btnEl.classList.remove('border-rose-400/60', 'bg-rose-500/20');
+      }
+    }
+
     function updateUI() {
       const rank = getRankInfo();
       const span = Math.max(1, rank.next - rank.min);
@@ -648,6 +747,7 @@
         modalBuffBox.classList.add('hidden');
       }
 
+      syncExitLikeUI();
       renderHistory();
     }
 
@@ -668,6 +768,8 @@
           if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
           if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
           if (!Array.isArray(state.history)) state.history = [];
+          if (typeof state.likedPlatform !== 'boolean') state.likedPlatform = false;
+          if (typeof state.lastExitComment !== 'string') state.lastExitComment = '';
         }
       } catch (e) {}
       state.visitsCount = (state.visitsCount || 0) + 1;
@@ -782,6 +884,113 @@
       m.style.display = 'none';
     }
 
+    /* SALIDA CON AGRADECIMIENTO, LIKE, COMENTARIO Y COLABORACIÓN */
+    function openExitModal() {
+      const nick = state.nickname ? state.nickname : 'Herrero';
+      document.getElementById('exit-farewell-sub').textContent =
+        '¡Gracias por haber pasado por el taller, ' + nick + '! Tu oro (' + formatGold(state.gold) + ' ORO) queda guardado acá.';
+      document.getElementById('exit-comment-input').value = state.lastExitComment || '';
+      document.getElementById('exit-feedback-msg').classList.add('hidden');
+      document.getElementById('exit-closed-notice').classList.add('hidden');
+
+      const supHint = document.getElementById('exit-support-hint');
+      if (state.supportUrl) {
+        supHint.textContent = 'Tenés un enlace de colaboración listo para aportar si lo deseás.';
+      } else {
+        supHint.textContent = 'Recordá que podés dejar tu aporte o configurar tu link de colaboración.';
+      }
+
+      syncExitLikeUI();
+      showModal('exit-modal');
+    }
+
+    function toggleExitLike() {
+      state.likedPlatform = !state.likedPlatform;
+      if (state.likedPlatform) {
+        playSound('star');
+        addHistory('Dejó un ❤️ a la plataforma', 'Like', 'gain');
+      }
+      saveState();
+      updateUI();
+      const fb = document.getElementById('exit-feedback-msg');
+      fb.textContent = state.likedPlatform
+        ? '¡Gracias por ese like! Quedó registrado en tu bitácora.'
+        : 'Like quitado.';
+      fb.className = 'mt-1.5 text-[11px] font-bold text-rose-300';
+      fb.classList.remove('hidden');
+    }
+
+    function buildExitFeedbackMessage() {
+      const comment = document.getElementById('exit-comment-input').value.trim();
+      state.lastExitComment = comment;
+      saveState();
+
+      const likeStatus = state.likedPlatform ? '❤️ Sí, dejó Like' : '🤍 Sin marcar like';
+      const nick = state.nickname || 'Invitado';
+      return '¡Hola! Estuve en Forjador de Oro (' + nick + ') y quería dejarte mi feedback de salida.\n' +
+        'Like: ' + likeStatus + '\n' +
+        'Comentario: ' + (comment || '(Sin comentario escrito)') + '\n' +
+        'Oro actual: ' + formatGold(state.gold) + ' ORO · Visitas: ' + formatGold(state.visitsCount);
+    }
+
+    function sendExitViaWhatsApp() {
+      const fb = document.getElementById('exit-feedback-msg');
+      const phone = (state.creatorWhatsApp || '').replace(/\D/g, '');
+      if (!phone) {
+        fb.textContent = '⚠️ Cargá un WhatsApp en el botón Mensaje para enviarlo.';
+        fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildExitFeedbackMessage()), '_blank', 'noopener,noreferrer');
+      fb.textContent = '✅ Abriendo WhatsApp con tu like y comentario...';
+      fb.className = 'mt-1.5 text-[11px] font-bold text-emerald-400';
+      fb.classList.remove('hidden');
+    }
+
+    function sendExitViaEmail() {
+      const fb = document.getElementById('exit-feedback-msg');
+      const email = (state.creatorEmail || '').trim();
+      if (!email) {
+        fb.textContent = '⚠️ Cargá un correo en el botón Mensaje para enviarlo.';
+        fb.className = 'mt-1.5 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      window.location.href = 'mailto:' + email +
+        '?subject=' + encodeURIComponent('Comentario de salida — Forjador de Oro') +
+        '&body=' + encodeURIComponent(buildExitFeedbackMessage());
+      fb.textContent = '✅ Abriendo tu correo con tu comentario...';
+      fb.className = 'mt-1.5 text-[11px] font-bold text-indigo-300';
+      fb.classList.remove('hidden');
+    }
+
+    function goToSupportFromExit() {
+      const comment = document.getElementById('exit-comment-input').value.trim();
+      if (comment) {
+        state.lastExitComment = comment;
+        saveState();
+      }
+      hideModal('exit-modal');
+      openSupportModal();
+    }
+
+    function confirmExitPlatform() {
+      const comment = document.getElementById('exit-comment-input').value.trim();
+      if (comment) {
+        state.lastExitComment = comment;
+      }
+      saveState();
+
+      try {
+        window.close();
+      } catch (e) {}
+
+      setTimeout(() => {
+        document.getElementById('exit-closed-notice').classList.remove('hidden');
+      }, 150);
+    }
+
     /* APODO */
     function openNicknameModal() {
       document.getElementById('nickname-input').value = state.nickname || '';
@@ -825,7 +1034,9 @@
         soundEnabled: true,
         activeBuffs: [],
         spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
-        wheelPos: null
+        wheelPos: null,
+        likedPlatform: false,
+        lastExitComment: ''
       };
       currentWheelAngle = 0;
       const spinner = document.getElementById('wheel-spinner');
@@ -1093,6 +1304,15 @@
       window.addEventListener('mousemove', (e) => { if (isDragging) onMove(e.clientX, e.clientY); });
       window.addEventListener('mouseup', onEnd);
     }
+
+    document.getElementById('open-exit-btn').addEventListener('click', openExitModal);
+    document.getElementById('close-exit-btn').addEventListener('click', () => hideModal('exit-modal'));
+    document.getElementById('exit-stay-btn').addEventListener('click', () => hideModal('exit-modal'));
+    document.getElementById('exit-like-btn').addEventListener('click', toggleExitLike);
+    document.getElementById('exit-send-wa-btn').addEventListener('click', sendExitViaWhatsApp);
+    document.getElementById('exit-send-mail-btn').addEventListener('click', sendExitViaEmail);
+    document.getElementById('exit-go-support-btn').addEventListener('click', goToSupportFromExit);
+    document.getElementById('exit-confirm-btn').addEventListener('click', confirmExitPlatform);
 
     document.getElementById('open-nick-btn').addEventListener('click', openNicknameModal);
     document.getElementById('close-nick-btn').addEventListener('click', () => hideModal('nickname-modal'));
