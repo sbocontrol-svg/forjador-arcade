@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Rodillos del Taller — Forjador de Oro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f17;
+      color: #f8fafc;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25); }
+      50% { box-shadow: 0 0 28px rgba(245, 158, 11, 0.55); }
+    }
+
+    .gold-glow {
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    @keyframes jackpotPop {
+      0% { transform: scale(0.65) rotate(-2deg); opacity: 0; }
+      65% { transform: scale(1.06) rotate(1deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .jackpot-banner-anim {
+      animation: jackpotPop 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes wheelFloat {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
+    }
+
+    @keyframes wheelPulseRing {
+      0% { transform: scale(0.95); opacity: 0.85; }
+      70% { transform: scale(1.28); opacity: 0; }
+      100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    @keyframes glintSweep {
+      0%, 65% { transform: translateX(-140%) rotate(25deg); }
+      100% { transform: translateX(180%) rotate(25deg); }
+    }
+
+    .floating-roulette-btn {
+      animation: wheelFloat 2.8s ease-in-out infinite;
+      pointer-events: auto !important;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .floating-roulette-btn.is-dragging {
+      animation: none !important;
+      transform: scale(1.08);
+      cursor: grabbing;
+    }
+
+    .floating-roulette-ring {
+      animation: wheelPulseRing 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+      pointer-events: none;
+    }
+
+    .glint-bar {
+      position: absolute;
+      top: -20%;
+      left: 0;
+      width: 35%;
+      height: 140%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+      animation: glintSweep 3.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid #fbbf24;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.8));
+    }
+
+    .cell-win {
+      border-color: #fbbf24 !important;
+      background-color: rgba(245, 158, 11, 0.24) !important;
+      box-shadow: 0 0 16px rgba(251, 191, 36, 0.45);
+      transform: scale(1.03);
+    }
+
+    .cell-joker-trap {
+      border-color: #f43f5e !important;
+      background-color: rgba(244, 63, 94, 0.22) !important;
+      box-shadow: 0 0 14px rgba(244, 63, 94, 0.45);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-5 max-w-md mx-auto relative">
+
+  <!-- BANNER FLOTANTE GRANDE DE PREMIO MAYOR (9/9 IGUALES) -->
+  <div id="jackpot-banner" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="jackpot-banner-anim w-full max-w-sm rounded-3xl bg-gradient-to-b from-amber-950 via-slate-900 to-slate-950 border-4 border-amber-300 p-6 text-center shadow-[0_0_50px_rgba(251,191,36,0.65)]">
+      <div id="jackpot-symbol" class="text-5xl mb-2">🔨</div>
+      <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black uppercase tracking-widest">
+        ¡Premio Mayor 9/9!
+      </span>
+      <h2 class="text-2xl font-black text-amber-300 mt-2 tracking-tight">
+        ¡GRILLA COMPLETA!
+      </h2>
+      <p id="jackpot-subtitle" class="text-xs text-slate-200 mt-1">
+        ¡Los 9 casilleros alineados al estilo tragamonedas!
+      </p>
+      <div id="jackpot-prize" class="mt-4 py-3 px-4 rounded-2xl bg-slate-950/90 border border-amber-400/50 text-3xl font-black mono text-emerald-400">
+        +0 ORO
+      </div>
+      <button type="button" onclick="closeJackpotBanner()" class="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 text-slate-950 font-black text-sm shadow-lg transition active:scale-95">
+        ¡Cobrar y Seguir Tirando!
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTÓN FLOTANTE ARRASTRABLE RULETA -->
+  <button id="open-wheel-btn" type="button" style="right: 10px; top: 24%;" class="fixed z-40 floating-roulette-btn group focus:outline-none">
+    <span class="absolute inset-0 rounded-full bg-purple-500/40 floating-roulette-ring"></span>
+    <div class="relative w-16 h-16 rounded-full bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-700 border-2 border-amber-300/80 shadow-[0_8px_24px_rgba(147,51,234,0.65)] flex flex-col items-center justify-center overflow-hidden pointer-events-none">
+      <div class="glint-bar"></div>
+      <span class="text-xl leading-none drop-shadow">🎡</span>
+      <span class="text-[9px] font-black uppercase tracking-tighter text-amber-200 mt-0.5">Ruleta</span>
+      <span id="floating-spins-badge" class="text-[9px] font-bold mono bg-black/45 px-1.5 rounded-full text-white leading-tight mt-0.5">3/3</span>
+    </div>
+  </button>
+
+  <div>
+    <!-- HEADER -->
+    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 shadow-lg">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <a href="index.html" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center justify-center font-black shrink-0 transition" title="Volver al inicio">
+          ←
+        </a>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">🎰 Rodillos 8 Líneas</h1>
+          <p id="header-user-subtitle" class="text-[11px] text-slate-400 truncate">9 símbolos · 8 líneas + 9/9 mayor</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" id="sound-toggle" onclick="toggleSound()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition" title="Sonido">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- FILA DEBAJO DEL HEADER: MENSAJE Y COLABORACIÓN -->
+    <div class="mt-2 grid grid-cols-2 gap-2">
+      <button type="button" onclick="openMessageModal()" class="py-2 px-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>✉️</span>
+        <span>Mensaje</span>
+      </button>
+      <button type="button" onclick="openSupportModal()" class="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>☕</span>
+        <span>Colaborar</span>
+      </button>
+    </div>
+
+    <!-- TESORO Y RANGO -->
+    <section class="mt-3 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700/80 rounded-2xl p-3.5 shadow-xl">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Tesoro del Taller</span>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span class="text-lg">🪙</span>
+            <span id="total-gold" class="text-2xl sm:text-3xl font-black mono tracking-tight text-amber-300">1.000</span>
+            <span class="text-[11px] font-bold text-amber-400/80">ORO</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="rank-title" class="font-extrabold text-amber-400 text-xs block">🔨 Aprendiz</span>
+          <span id="wheel-trigger-hint" class="text-[10px] text-amber-300/90 block">Ruleta auto: 0/6 tiradas</span>
+          <span id="best-record-badge" class="text-[10px] font-bold text-emerald-400 mono">Récord: 0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BONOS ACTIVOS -->
+    <div id="active-buffs-banner" class="hidden mt-2.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-900/70 via-indigo-900/70 to-purple-900/70 border border-purple-500/50 flex flex-col gap-1 text-xs shadow-md">
+      <div class="flex items-center justify-between">
+        <span class="text-purple-200 font-bold text-[10px] uppercase tracking-wider">✨ Bonos activos en los rodillos</span>
+        <span class="px-2 py-0.5 rounded bg-purple-500/30 text-purple-100 font-bold text-[10px]">ACTIVOS</span>
+      </div>
+      <div id="active-buffs-chips" class="flex flex-wrap gap-1.5"></div>
+    </div>
+
+    <!-- MATRIZ 3x3 -->
+    <section class="mt-3 bg-slate-900/95 border-2 border-amber-500/40 rounded-2xl p-3.5 shadow-xl">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300">8 Líneas + 9/9 Mayor</span>
+        <span class="text-[10px] text-emerald-300 font-bold mono">3 Horiz + 3 Vert + 2 Diag</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-slate-950 border border-slate-800">
+        <div id="cell-0-0" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">🪙</div>
+        <div id="cell-1-0" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">🔩</div>
+        <div id="cell-2-0" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">⭐</div>
+
+        <div id="cell-0-1" class="h-16 rounded-xl bg-slate-900 border border-amber-400/35 flex items-center justify-center text-3xl transition-all">🔨</div>
+        <div id="cell-1-1" class="h-16 rounded-xl bg-slate-900 border border-amber-400/35 flex items-center justify-center text-3xl transition-all">🪙</div>
+        <div id="cell-2-1" class="h-16 rounded-xl bg-slate-900 border border-amber-400/35 flex items-center justify-center text-3xl transition-all">⚙️</div>
+
+        <div id="cell-0-2" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">💎</div>
+        <div id="cell-1-2" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">🛡️</div>
+        <div id="cell-2-2" class="h-16 rounded-xl bg-slate-900 border border-slate-700/90 flex items-center justify-center text-3xl transition-all">🔥</div>
+      </div>
+
+      <!-- SELECTOR DE APUESTA (50 A 1.000 ORO) -->
+      <div class="mt-3 p-2.5 rounded-xl bg-slate-950/90 border border-slate-800">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-bold text-slate-300">Tu apuesta:</span>
+          <span id="bet-amount-display" class="text-sm font-black mono text-amber-300">100 ORO</span>
+        </div>
+
+        <input id="bet-slider" type="range" min="50" max="1000" step="50" value="100" oninput="onBetSliderInput(this.value)" class="w-full accent-amber-400 cursor-pointer" />
+
+        <div class="grid grid-cols-4 gap-1.5 mt-2 text-xs font-extrabold mono">
+          <button type="button" onclick="setBetAmount(50)" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">Mín 50</button>
+          <button type="button" onclick="changeBet(-50)" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition">-50</button>
+          <button type="button" onclick="changeBet(50)" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition">+50</button>
+          <button type="button" onclick="setBetMax()" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition">Máx</button>
+        </div>
+      </div>
+
+      <div id="slot-status-msg" class="mt-2.5 text-center text-xs font-bold text-slate-300 min-h-[2.4rem] flex items-center justify-center px-1">
+        Elegí tu apuesta (50 a 1.000 ORO) y tirá las 8 líneas.
+      </div>
+
+      <button type="button" id="spin-slot-btn" onclick="spinSlotMachine()" class="mt-2 w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg gold-glow flex items-center justify-center gap-2 transition active:scale-95">
+        <span>🎰</span>
+        <span id="spin-slot-btn-text">Tirar 8 Líneas (100 ORO)</span>
+      </button>
+
+      <!-- LEYENDA DE SÍMBOLOS -->
+      <div class="mt-3 pt-2.5 border-t border-slate-800/90 text-[10px] text-slate-400 grid grid-cols-2 gap-1.5 mono">
+        <div>🔨🔨🔨 = <span class="text-amber-300 font-bold">x4.0</span> apuesta</div>
+        <div>⭐⭐⭐ = <span class="text-amber-300 font-bold">x2.5</span> apuesta</div>
+        <div>🪙🪙🪙 = <span class="text-emerald-300 font-bold">x1.5</span> apuesta</div>
+        <div>🃏 Trampa = <span class="text-rose-400 font-bold">-50%</span> apuesta</div>
+        <div>🔩⚙️🔥💎🛡️ = <span class="text-slate-300">Neutros (0)</span></div>
+        <div>9 iguales = <span class="text-yellow-300 font-bold">¡PREMIO MAYOR!</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL MENSAJE -->
+  <div id="message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border-2 border-indigo-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl my-auto">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-indigo-300">✉️ Mensaje al Diseñador</h3>
+        <button type="button" onclick="closeMessageModal()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Escribí tu mensaje y elegí enviarlo por WhatsApp o correo electrónico.
+      </p>
+
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Tu mensaje</label>
+      <textarea id="player-message-text" rows="3" placeholder="Ej: ¡Qué bueno quedó el taller! Probé los rodillos de 8 líneas." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-xs focus:outline-none focus:border-indigo-400"></textarea>
+
+      <label class="mt-2.5 flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+        <input id="include-stats-checkbox" type="checkbox" checked class="rounded border-slate-600 bg-slate-950 text-indigo-500 focus:ring-0" />
+        <span>Incluir datos de la partida (apodo, oro, récord y visitas)</span>
+      </label>
+
+      <p id="message-feedback-msg" class="hidden mt-2 text-[11px] font-bold text-rose-400"></p>
+
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button type="button" onclick="sendViaWhatsApp()" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>💬</span>
+          <span>WhatsApp</span>
+        </button>
+        <button type="button" onclick="sendViaEmail()" class="py-2.5 px-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>📧</span>
+          <span>Correo</span>
+        </button>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-800">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-2">Destino de contacto (guardado acá)</span>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">WhatsApp (ej: 5492364000000)</label>
+            <input id="creator-whatsapp-input" type="tel" placeholder="5492364502082" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Correo electrónico</label>
+            <input id="creator-email-input" type="email" placeholder="sbocontrol@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+        <button type="button" onclick="saveContactConfig()" class="w-full mt-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 font-bold text-xs transition">
+          Guardar contacto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL COLABORACIÓN -->
+  <div id="support-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-amber-400">☕ Colaboración para el Diseñador</h3>
+        <button type="button" onclick="closeSupportModal()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Espacio de colaboración voluntaria para quien diseña y desarrolla el taller. Guardá tu enlace cuando lo tengas listo.
+      </p>
+
+      <div id="support-link-ready-box" class="hidden mb-3 p-3 rounded-xl bg-slate-950 border border-emerald-500/40">
+        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">Enlace de colaboración listo</span>
+        <p id="support-link-preview" class="text-xs mono text-slate-200 break-all mb-2.5"></p>
+        <a id="support-external-anchor" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>🚀</span>
+          <span>Ir a colaborar</span>
+        </a>
+      </div>
+
+      <div id="support-link-empty-box" class="mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400">
+        Todavía no cargaste un enlace de colaboración. Pegá acá tu link cuando quieras.
+      </div>
+
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Enlace de colaboración</label>
+      <input id="support-url-input" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
+      <p id="support-error-msg" class="hidden mt-1.5 text-[11px] font-bold text-rose-400"></p>
+
+      <div class="flex gap-2 mt-3.5">
+        <button type="button" onclick="saveSupportUrl()" class="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
+          Guardar enlace
+        </button>
+        <button type="button" onclick="closeSupportModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL RULETA -->
+  <div id="wheel-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border-2 border-purple-500/60 rounded-3xl p-5 w-full max-w-sm shadow-2xl relative flex flex-col items-center my-auto">
+      <button type="button" onclick="closeWheelModal()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">✕</button>
+
+      <div class="text-center mb-2">
+        <h3 class="text-lg font-black text-amber-400 tracking-tight">Ruleta del Taller</h3>
+        <p id="wheel-mode-caption" class="text-[11px] text-slate-300">Acumulá hasta 3 bonos para los Rodillos.</p>
+        <div class="mt-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-purple-950 border border-purple-500/50 text-xs font-bold text-purple-200">
+          <span>Tiradas restantes:</span>
+          <span id="modal-spins-counter" class="mono text-amber-300">3 de 3</span>
+        </div>
+      </div>
+
+      <div class="relative w-60 h-60 sm:w-64 sm:h-64 my-2 flex items-center justify-center">
+        <div class="wheel-pointer absolute -top-2 z-20"></div>
+        <svg id="wheel-spinner" viewBox="0 0 300 300" class="w-full h-full rounded-full shadow-[0_0_30px_rgba(245,158,11,0.3)] border-4 border-amber-400 will-change-transform">
+          <path d="M150,150 L150,0 A150,150 0 0,1 279.9,75 Z" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(30 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🔥</text><text x="150" y="62" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="800">Doble x2</text></g>
+          <path d="M150,150 L279.9,75 A150,150 0 0,1 279.9,225 Z" fill="#059669" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(90 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🪙</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">+250 Oro</text></g>
+          <path d="M150,150 L279.9,225 A150,150 0 0,1 150,300 Z" fill="#7c3aed" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(150 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🃏</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Joker +15%</text></g>
+          <path d="M150,150 L150,300 A150,150 0 0,1 20.1,225 Z" fill="#d97706" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(210 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">⭐</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Estrellas x2</text></g>
+          <path d="M150,150 L20.1,225 A150,150 0 0,1 20.1,75 Z" fill="#dc2626" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(270 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">💥</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Chispa -100</text></g>
+          <path d="M150,150 L20.1,75 A150,150 0 0,1 150,0 Z" fill="#0284c7" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(330 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">⏱️</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">+1 Giro</text></g>
+          <circle cx="150" cy="150" r="24" fill="#0f172a" stroke="#fbbf24" stroke-width="3"/>
+          <text x="150" y="156" text-anchor="middle" fill="#fbbf24" font-size="16" font-weight="bold">⚡</text>
+        </svg>
+      </div>
+
+      <div id="wheel-result-box" class="hidden w-full text-center p-2.5 rounded-xl bg-slate-800/90 border border-slate-700 mt-1">
+        <p id="wheel-result-title" class="font-extrabold text-sm text-amber-400">¡Premio!</p>
+        <p id="wheel-result-desc" class="text-xs text-slate-300 mt-0.5">Descripción</p>
+      </div>
+
+      <div id="wheel-accumulated-box" class="hidden w-full mt-2 p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-center">
+        <span class="text-[10px] uppercase tracking-wider text-purple-300 font-bold block">Bonos acumulados</span>
+        <div id="modal-buff-list" class="flex flex-wrap justify-center gap-1 mt-1"></div>
+      </div>
+
+      <div class="w-full mt-3 flex flex-col gap-2">
+        <button type="button" id="spin-action-btn" onclick="spinWheel()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-slate-950 font-black text-sm shadow-lg transition active:scale-95">
+          ¡Girar Ruleta!
+        </button>
+        <button type="button" onclick="closeWheelModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/40 font-bold text-xs transition">
+          Seguir en los Rodillos
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const STORAGE_KEY = 'forjador_oro_arcade_v3';
+    const MAX_SPINS_PER_ROUND_CYCLE = 3;
+    const MIN_BET = 50;
+    const MAX_BET = 1000;
+    const SLOT_WHEEL_EVERY = 6;
+    const GUARANTEED_JACKPOT_EVERY = 50;
+
+    // 9 símbolos: 3 de premio, 1 joker trampa (-50% apuesta) y 5 neutros
+    const SLOT_SYMBOLS = ['🪙', '⭐', '🔨', '🃏', '🔩', '⚙️', '🔥', '💎', '🛡️'];
+    const MAJOR_JACKPOT_POOL = ['🔨', '⭐', '🪙'];
+
+    const PAYLINES = [
+      { name: 'Horiz. Arriba', coords: [[0, 0], [1, 0], [2, 0]] },
+      { name: 'Horiz. Centro', coords: [[0, 1], [1, 1], [2, 1]] },
+      { name: 'Horiz. Abajo', coords: [[0, 2], [1, 2], [2, 2]] },
+      { name: 'Vert. Izq.', coords: [[0, 0], [0, 1], [0, 2]] },
+      { name: 'Vert. Centro', coords: [[1, 0], [1, 1], [1, 2]] },
+      { name: 'Vert. Der.', coords: [[2, 0], [2, 1], [2, 2]] },
+      { name: 'Diag. ↘', coords: [[0, 0], [1, 1], [2, 2]] },
+      { name: 'Diag. ↗', coords: [[0, 2], [1, 1], [2, 0]] }
+    ];
+
+    let state = {
+      gold: 1000,
+      bestRoundGold: 0,
+      roundsPlayed: 0,
+      totalTaps: 0,
+      visitsCount: 0,
+      anvilHitsSinceWheel: 0,
+      slotSpinsSinceWheel: 0,
+      totalSlotSpins: 0,
+      nickname: '',
+      supportUrl: '',
+      creatorWhatsApp: '5492364502082',
+      creatorEmail: 'sbocontrol@gmail.com',
+      history: [],
+      soundEnabled: true,
+      activeBuffs: [],
+      spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
+      wheelPos: null
+    };
+
+    let currentBet = 100;
+    let isSlotSpinning = false;
+    let currentWheelAngle = 0;
+    let isSpinning = false;
+    let spinAnimFrame = null;
+
+    const wheelSegments = [
+      { id: 'double', emoji: '🔥', title: '¡Doble Forja x2!', chip: '🔥 Doble x2', desc: 'Duplica los premios de tus 8 líneas en Rodillos.' },
+      { id: 'gold250', emoji: '🪙', title: '¡Bolsa de +250 ORO!', chip: '🪙 +250 Oro', desc: 'Sumaste 250 monedas de oro directo a tu tesoro.' },
+      { id: 'joker', emoji: '🃏', title: '¡Comodín Joker +15%!', chip: '🃏 Joker +15%', desc: 'Suma +15% extra a los premios de Rodillos.' },
+      { id: 'stars', emoji: '⭐', title: '¡Estrellas Dobles!', chip: '⭐ Estrellas x2', desc: 'Suma +50% extra en los premios de Rodillos.' },
+      { id: 'spark', emoji: '💥', title: '¡Chispa Rebelde!', chip: '💥 Chispa -100', desc: 'Saltó una chispa y perdiste 100 ORO (mínimo 0).' },
+      { id: 'time', emoji: '⏱️', title: '¡Giro Extra de Ruleta!', chip: '⏱️ +1 Giro', desc: 'Sumaste +1 giro extra de ruleta.' }
+    ];
+
+    function formatGold(num) {
+      return Math.floor(num).toLocaleString('es-AR');
+    }
+
+    function randomSymbol() {
+      return SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+    }
+
+    function hasBuff(id) {
+      return Array.isArray(state.activeBuffs) && state.activeBuffs.includes(id);
+    }
+
+    function addBuff(id) {
+      if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+      if (!state.activeBuffs.includes(id)) state.activeBuffs.push(id);
+    }
+
+    function getRankInfo() {
+      const t = state.totalTaps;
+      if (t < 25) return { name: '🔨 Aprendiz' };
+      if (t < 75) return { name: '⚒️ Oficial' };
+      if (t < 150) return { name: '⚡ Maestro Herrero' };
+      return { name: '👑 Leyenda del Taller' };
+    }
+
+    function addHistory(text, amountStr, type = 'gain') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      state.history.unshift({ time: timeStr, text, amount: amountStr, type });
+      if (state.history.length > 20) state.history.pop();
+    }
+
+    function renderBuffChips(containerId) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = (state.activeBuffs || []).map(id => {
+        const seg = wheelSegments.find(s => s.id === id);
+        if (!seg) return '';
+        return '<span class="px-2 py-0.5 rounded-full bg-slate-950/90 border border-amber-400/40 text-amber-200 font-bold text-[10px]">' + seg.chip + '</span>';
+      }).join('');
+    }
+
+    function setBetAmount(val) {
+      if (isSlotSpinning) return;
+      const clamped = Math.max(MIN_BET, Math.min(MAX_BET, Math.round(Number(val) / 50) * 50));
+      currentBet = clamped;
+      updateUI();
+    }
+
+    function changeBet(delta) {
+      setBetAmount(currentBet + delta);
+    }
+
+    function setBetMax() {
+      const maxAffordable = Math.floor(Math.min(MAX_BET, state.gold) / 50) * 50;
+      setBetAmount(Math.max(MIN_BET, maxAffordable));
+    }
+
+    function onBetSliderInput(val) {
+      setBetAmount(val);
+    }
+
+    function openJackpotBanner(symbol, prizeAmount) {
+      document.getElementById('jackpot-symbol').textContent = symbol;
+      document.getElementById('jackpot-subtitle').textContent = '¡Los 9 casilleros salieron con ' + symbol + '!';
+      document.getElementById('jackpot-prize').textContent = '+' + formatGold(prizeAmount) + ' ORO';
+      const banner = document.getElementById('jackpot-banner');
+      banner.classList.remove('hidden');
+      banner.style.display = 'flex';
+    }
+
+    function closeJackpotBanner() {
+      const banner = document.getElementById('jackpot-banner');
+      banner.classList.add('hidden');
+      banner.style.display = 'none';
+      maybeTriggerAutoWheel();
+    }
+
+    function updateUI() {
+      const rank = getRankInfo();
+      document.getElementById('total-gold').textContent = formatGold(state.gold);
+      document.getElementById('best-record-badge').textContent = 'Récord: ' + formatGold(state.bestRoundGold);
+      document.getElementById('rank-title').textContent = rank.name;
+      document.getElementById('wheel-trigger-hint').textContent = 'Ruleta auto: ' + (state.slotSpinsSinceWheel || 0) + '/' + SLOT_WHEEL_EVERY + ' tiradas';
+      document.getElementById('floating-spins-badge').textContent = state.spinsLeft + '/' + MAX_SPINS_PER_ROUND_CYCLE;
+      document.getElementById('modal-spins-counter').textContent = state.spinsLeft + ' de ' + MAX_SPINS_PER_ROUND_CYCLE;
+      document.getElementById('header-user-subtitle').textContent =
+        (state.nickname ? state.nickname + ' · ' : '') + 'Tiradas: ' + (state.totalSlotSpins || 0);
+      document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
+
+      document.getElementById('bet-amount-display').textContent = formatGold(currentBet) + ' ORO';
+      document.getElementById('bet-slider').value = currentBet;
+      document.getElementById('spin-slot-btn-text').textContent = 'Tirar 8 Líneas (' + formatGold(currentBet) + ' ORO)';
+
+      const buffBanner = document.getElementById('active-buffs-banner');
+      if (Array.isArray(state.activeBuffs) && state.activeBuffs.length > 0) {
+        renderBuffChips('active-buffs-chips');
+        buffBanner.classList.remove('hidden');
+        buffBanner.style.display = 'flex';
+      } else {
+        buffBanner.classList.add('hidden');
+        buffBanner.style.display = 'none';
+      }
+
+      const modalBuffBox = document.getElementById('wheel-accumulated-box');
+      if (Array.isArray(state.activeBuffs) && state.activeBuffs.length > 0) {
+        renderBuffChips('modal-buff-list');
+        modalBuffBox.classList.remove('hidden');
+      } else {
+        modalBuffBox.classList.add('hidden');
+      }
+
+      const spinBtn = document.getElementById('spin-slot-btn');
+      if (!isSlotSpinning) {
+        spinBtn.disabled = state.gold < currentBet;
+        spinBtn.classList.toggle('opacity-50', state.gold < currentBet);
+      }
+    }
+
+    function maybeTriggerAutoWheel() {
+      if (isSlotSpinning || isSpinning) return;
+      if (!document.getElementById('jackpot-banner').classList.contains('hidden')) return;
+      if (state.spinsLeft <= 0) return;
+      if ((state.slotSpinsSinceWheel || 0) >= SLOT_WHEEL_EVERY) {
+        state.slotSpinsSinceWheel = 0;
+        saveState();
+        openWheelModal('¡Hiciste 6 tiradas en los rodillos! Probá la ruleta y acumulá bonos.');
+      }
+    }
+
+    function initDraggableWheelButton() {
+      const btn = document.getElementById('open-wheel-btn');
+      let isDragging = false;
+      let hasMoved = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+
+      if (state.wheelPos && typeof state.wheelPos.left === 'number' && typeof state.wheelPos.top === 'number') {
+        btn.style.right = 'auto';
+        btn.style.left = state.wheelPos.left + 'px';
+        btn.style.top = state.wheelPos.top + 'px';
+      }
+
+      const onStart = (clientX, clientY) => {
+        if (isSlotSpinning) return;
+        const rect = btn.getBoundingClientRect();
+        isDragging = true;
+        hasMoved = false;
+        startX = clientX;
+        startY = clientY;
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        btn.classList.add('is-dragging');
+      };
+
+      const onMove = (clientX, clientY) => {
+        if (!isDragging) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) hasMoved = true;
+        if (hasMoved) {
+          const maxLeft = window.innerWidth - btn.offsetWidth - 4;
+          const maxTop = window.innerHeight - btn.offsetHeight - 4;
+          btn.style.right = 'auto';
+          btn.style.left = Math.max(4, Math.min(maxLeft, initialLeft + dx)) + 'px';
+          btn.style.top = Math.max(4, Math.min(maxTop, initialTop + dy)) + 'px';
+        }
+      };
+
+      const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        btn.classList.remove('is-dragging');
+        if (hasMoved) {
+          state.wheelPos = { left: parseFloat(btn.style.left), top: parseFloat(btn.style.top) };
+          saveState();
+        } else {
+          openWheelModal();
+        }
+      };
+
+      btn.addEventListener('touchstart', (e) => { if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchmove', (e) => { if (isDragging && e.touches.length === 1) { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+      window.addEventListener('touchend', onEnd);
+      btn.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+      window.addEventListener('mousemove', (e) => { if (isDragging) onMove(e.clientX, e.clientY); });
+      window.addEventListener('mouseup', onEnd);
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = Object.assign({}, state, parsed);
+          if (!state.creatorWhatsApp) state.creatorWhatsApp = '5492364502082';
+          if (!state.creatorEmail) state.creatorEmail = 'sbocontrol@gmail.com';
+          if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
+          if (typeof state.totalSlotSpins !== 'number') state.totalSlotSpins = 0;
+          if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+        }
+      } catch (e) {}
+      saveState();
+      updateUI();
+      initDraggableWheelButton();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function openMessageModal() {
+      if (isSlotSpinning) return;
+      document.getElementById('creator-whatsapp-input').value = state.creatorWhatsApp || '';
+      document.getElementById('creator-email-input').value = state.creatorEmail || '';
+      document.getElementById('message-feedback-msg').classList.add('hidden');
+      const msgEl = document.getElementById('player-message-text');
+      if (!msgEl.value.trim()) msgEl.value = '¡Hola! Estuve probando los Rodillos de 9 símbolos en el taller.';
+      const modal = document.getElementById('message-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeMessageModal() {
+      const modal = document.getElementById('message-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveContactConfig() {
+      state.creatorWhatsApp = document.getElementById('creator-whatsapp-input').value.replace(/\D/g, '');
+      state.creatorEmail = document.getElementById('creator-email-input').value.trim();
+      saveState();
+      const fb = document.getElementById('message-feedback-msg');
+      fb.textContent = '✅ Contacto guardado en este dispositivo.';
+      fb.className = 'mt-2 text-[11px] font-bold text-emerald-400';
+      fb.classList.remove('hidden');
+    }
+
+    function buildFullMessageBody() {
+      const customText = document.getElementById('player-message-text').value.trim();
+      const includeStats = document.getElementById('include-stats-checkbox').checked;
+      let body = customText || '¡Hola! Probé los Rodillos.';
+      if (includeStats) {
+        const nick = state.nickname || 'Invitado';
+        body += '\n\n— Datos del taller —\nHerrero: ' + nick + '\nOro actual: ' + formatGold(state.gold) + '\nRécord de ronda: ' + formatGold(state.bestRoundGold) + '\nRondas jugadas: ' + formatGold(state.roundsPlayed) + '\nVisitas: ' + formatGold(state.visitsCount);
+      }
+      return body;
+    }
+
+    function sendViaWhatsApp() {
+      const fb = document.getElementById('message-feedback-msg');
+      const phone = (document.getElementById('creator-whatsapp-input').value || state.creatorWhatsApp || '').replace(/\D/g, '');
+      if (!phone) {
+        fb.textContent = '⚠️ Primero cargá y guardá un número de WhatsApp.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorWhatsApp = phone;
+      saveState();
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildFullMessageBody()), '_blank', 'noopener,noreferrer');
+    }
+
+    function sendViaEmail() {
+      const fb = document.getElementById('message-feedback-msg');
+      const email = (document.getElementById('creator-email-input').value || state.creatorEmail || '').trim();
+      if (!email) {
+        fb.textContent = '⚠️ Primero cargá y guardá un correo electrónico.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorEmail = email;
+      saveState();
+      window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Rodillos del Taller') + '&body=' + encodeURIComponent(buildFullMessageBody());
+    }
+
+    function openSupportModal() {
+      if (isSlotSpinning) return;
+      const input = document.getElementById('support-url-input');
+      const err = document.getElementById('support-error-msg');
+      const readyBox = document.getElementById('support-link-ready-box');
+      const emptyBox = document.getElementById('support-link-empty-box');
+      input.value = state.supportUrl || '';
+      err.classList.add('hidden');
+      if (state.supportUrl) {
+        document.getElementById('support-link-preview').textContent = state.supportUrl;
+        document.getElementById('support-external-anchor').href = state.supportUrl;
+        readyBox.classList.remove('hidden');
+        emptyBox.classList.add('hidden');
+      } else {
+        readyBox.classList.add('hidden');
+        emptyBox.classList.remove('hidden');
+      }
+      const modal = document.getElementById('support-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeSupportModal() {
+      const modal = document.getElementById('support-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveSupportUrl() {
+      const raw = document.getElementById('support-url-input').value.trim();
+      const err = document.getElementById('support-error-msg');
+      if (!raw) {
+        state.supportUrl = '';
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+        return;
+      }
+      const normalized = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+      try {
+        const parsed = new URL(normalized);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error();
+        state.supportUrl = parsed.toString();
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+      } catch (e) {
+        err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
+        err.classList.remove('hidden');
+      }
+    }
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtor) audioCtx = new AudioCtor();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'coin') {
+          osc.frequency.setValueAtTime(659.25, now);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'star') {
+          osc.frequency.setValueAtTime(783.99, now);
+          osc.frequency.setValueAtTime(987.77, now + 0.05);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'special') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(880, now + 0.1);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'spark') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.setValueAtTime(95, now + 0.12);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now); osc.stop(now + 0.25);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      saveState();
+      updateUI();
+    }
+
+    function syncWheelButtons() {
+      const spinBtn = document.getElementById('spin-action-btn');
+      if (state.spinsLeft <= 0) {
+        spinBtn.disabled = true;
+        spinBtn.classList.add('opacity-50');
+        spinBtn.textContent = 'Sin tiradas disponibles';
+      } else {
+        spinBtn.disabled = false;
+        spinBtn.classList.remove('opacity-50');
+        spinBtn.textContent = '¡Girar Ruleta! (' + state.spinsLeft + ' restantes)';
+      }
+    }
+
+    function openWheelModal(customCaption) {
+      if (isSlotSpinning) return;
+      document.getElementById('wheel-result-box').classList.add('hidden');
+      document.getElementById('wheel-mode-caption').textContent =
+        customCaption || 'Acumulá hasta 3 bonos para los Rodillos.';
+      syncWheelButtons();
+      updateUI();
+      const modal = document.getElementById('wheel-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeWheelModal() {
+      if (isSpinning) return;
+      const modal = document.getElementById('wheel-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      updateUI();
+    }
+
+    function spinWheel() {
+      if (isSpinning || state.spinsLeft <= 0) return;
+      isSpinning = true;
+      state.spinsLeft -= 1;
+      saveState();
+      updateUI();
+
+      const spinBtn = document.getElementById('spin-action-btn');
+      spinBtn.disabled = true;
+      spinBtn.classList.add('opacity-50');
+      spinBtn.textContent = 'Girando...';
+
+      const targetIndex = Math.floor(Math.random() * 6);
+      const targetAngleMod = (360 - (targetIndex * 60 + 30) + 360) % 360;
+      const currentMod = ((currentWheelAngle % 360) + 360) % 360;
+      const extraRotation = (targetAngleMod - currentMod + 360) % 360;
+      const totalDelta = (360 * 6) + extraRotation;
+      const duration = 3200;
+      const startTime = performance.now();
+      const spinner = document.getElementById('wheel-spinner');
+
+      function animateWheel(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const angleNow = currentWheelAngle + totalDelta * (1 - Math.pow(1 - progress, 3));
+        spinner.style.transform = 'rotate(' + angleNow + 'deg)';
+        if (progress < 1) {
+          spinAnimFrame = requestAnimationFrame(animateWheel);
+        } else {
+          currentWheelAngle += totalDelta;
+          isSpinning = false;
+          const won = wheelSegments[targetIndex];
+          document.getElementById('wheel-result-box').classList.remove('hidden');
+          document.getElementById('wheel-result-title').textContent = won.emoji + ' ' + won.title;
+          document.getElementById('wheel-result-desc').textContent = won.desc;
+
+          if (won.id === 'gold250') {
+            playSound('star');
+            state.gold += 250;
+            addHistory('Ruleta +250 ORO', '+250 ORO', 'deposit');
+          } else if (won.id === 'time') {
+            playSound('star');
+            state.spinsLeft = Math.min(MAX_SPINS_PER_ROUND_CYCLE, state.spinsLeft + 1);
+            addHistory('Ruleta +1 Giro', '+1 Giro', 'deposit');
+          } else if (won.id === 'spark') {
+            playSound('spark');
+            const lost = Math.min(100, state.gold);
+            state.gold -= lost;
+            addHistory('Chispa en la ruleta', '-' + lost + ' ORO', 'loss');
+          } else {
+            playSound('star');
+            addBuff(won.id);
+            addHistory('Bono: ' + won.chip, 'Acumulado', 'deposit');
+          }
+
+          saveState();
+          updateUI();
+          syncWheelButtons();
+        }
+      }
+      spinAnimFrame = requestAnimationFrame(animateWheel);
+    }
+
+    function setGridSymbols(cols) {
+      for (let c = 0; c < 3; c++) {
+        for (let r = 0; r < 3; r++) {
+          const el = document.getElementById('cell-' + c + '-' + r);
+          if (el) el.textContent = cols[c][r];
+        }
+      }
+    }
+
+    function clearCellHighlights() {
+      for (let c = 0; c < 3; c++) {
+        for (let r = 0; r < 3; r++) {
+          const el = document.getElementById('cell-' + c + '-' + r);
+          if (el) {
+            el.classList.remove('cell-win');
+            el.classList.remove('cell-joker-trap');
+          }
+        }
+      }
+    }
+
+    // Evalúa solo símbolos con premio: 🔨, ⭐ y 🪙. Los 5 neutros y 🃏 no suman línea.
+    function evaluateLineMultiplier(symbols) {
+      const [a, b, c] = symbols;
+      const prizeSyms = ['🔨', '⭐', '🪙'];
+      if (a === b && b === c && prizeSyms.includes(a)) {
+        if (a === '🔨') return { mult: 4.0, label: '🔨🔨🔨 x4' };
+        if (a === '⭐') return { mult: 2.5, label: '⭐⭐⭐ x2.5' };
+        return { mult: 1.5, label: '🪙🪙🪙 x1.5' };
+      }
+      if (a === b && prizeSyms.includes(a)) return { mult: 0.35, label: '2x' + a };
+      if (b === c && prizeSyms.includes(b)) return { mult: 0.35, label: '2x' + b };
+      if (a === c && prizeSyms.includes(a)) return { mult: 0.35, label: '2x' + a };
+      return { mult: 0, label: '' };
+    }
+
+    function spinSlotMachine() {
+      if (isSlotSpinning) return;
+      if (state.gold < currentBet) {
+        document.getElementById('slot-status-msg').innerHTML =
+          '<span class="text-rose-400">No te alcanza el oro para apostar ' + formatGold(currentBet) + ' ORO.</span>';
+        return;
+      }
+
+      isSlotSpinning = true;
+      clearCellHighlights();
+      const betUsed = currentBet;
+      state.gold -= betUsed;
+      state.slotSpinsSinceWheel = (state.slotSpinsSinceWheel || 0) + 1;
+      state.totalSlotSpins = (state.totalSlotSpins || 0) + 1;
+      saveState();
+      updateUI();
+
+      const spinBtn = document.getElementById('spin-slot-btn');
+      spinBtn.disabled = true;
+      spinBtn.classList.add('opacity-50');
+      document.getElementById('open-wheel-btn').classList.add('pointer-events-none', 'opacity-40');
+      document.getElementById('slot-status-msg').textContent = 'Girando las 8 líneas con ' + formatGold(betUsed) + ' ORO...';
+
+      // Cada 50 tiradas exactas salen garantizadas las 9 monedas 🪙
+      const isGuaranteed50 = (state.totalSlotSpins % GUARANTEED_JACKPOT_EVERY === 0);
+      const isLuckyJackpot = !isGuaranteed50 && (Math.random() < 0.02);
+      const forceFullGrid = isGuaranteed50 || isLuckyJackpot;
+      const forcedSym = isGuaranteed50
+        ? '🪙'
+        : MAJOR_JACKPOT_POOL[Math.floor(Math.random() * MAJOR_JACKPOT_POOL.length)];
+
+      const finalCols = forceFullGrid
+        ? [
+            [forcedSym, forcedSym, forcedSym],
+            [forcedSym, forcedSym, forcedSym],
+            [forcedSym, forcedSym, forcedSym]
+          ]
+        : [
+            [randomSymbol(), randomSymbol(), randomSymbol()],
+            [randomSymbol(), randomSymbol(), randomSymbol()],
+            [randomSymbol(), randomSymbol(), randomSymbol()]
+          ];
+
+      let ticks = 0;
+      const slotTimer = setInterval(() => {
+        ticks++;
+        playSound('coin');
+        setGridSymbols([
+          ticks >= 6 ? finalCols[0] : [randomSymbol(), randomSymbol(), randomSymbol()],
+          ticks >= 10 ? finalCols[1] : [randomSymbol(), randomSymbol(), randomSymbol()],
+          ticks >= 14 ? finalCols[2] : [randomSymbol(), randomSymbol(), randomSymbol()]
+        ]);
+
+        if (ticks >= 14) {
+          clearInterval(slotTimer);
+          setGridSymbols(finalCols);
+
+          const allCoords = [];
+          for (let c = 0; c < 3; c++) {
+            for (let r = 0; r < 3; r++) {
+              allCoords.push([c, r]);
+            }
+          }
+
+          const firstSym = finalCols[0][0];
+          const isFullGridJackpot = allCoords.every(([c, r]) => finalCols[c][r] === firstSym);
+
+          let jokerCount = 0;
+          allCoords.forEach(([c, r]) => {
+            if (finalCols[c][r] === '🃏') {
+              jokerCount++;
+              const cell = document.getElementById('cell-' + c + '-' + r);
+              if (cell) cell.classList.add('cell-joker-trap');
+            }
+          });
+
+          let totalMult = 0;
+          const winningLines = [];
+
+          PAYLINES.forEach(line => {
+            const syms = line.coords.map(([c, r]) => finalCols[c][r]);
+            const res = evaluateLineMultiplier(syms);
+            if (res.mult > 0) {
+              totalMult += res.mult;
+              winningLines.push(line.name);
+              line.coords.forEach(([c, r]) => {
+                const cell = document.getElementById('cell-' + c + '-' + r);
+                if (cell) cell.classList.add('cell-win');
+              });
+            }
+          });
+
+          if (isFullGridJackpot) {
+            const symBonusMult = firstSym === '🔨' ? 12 : (firstSym === '⭐' ? 9 : 7);
+            totalMult += symBonusMult;
+          }
+
+          let rawPrize = totalMult > 0 ? Math.round(betUsed * totalMult) : 0;
+          if (rawPrize > 0) {
+            if (hasBuff('double')) rawPrize *= 2;
+            if (hasBuff('stars')) rawPrize = Math.round(rawPrize * 1.5);
+            if (hasBuff('joker')) rawPrize = Math.round(rawPrize * 1.15);
+          }
+
+          const jokerPenalty = jokerCount > 0 ? Math.round(betUsed * 0.5 * jokerCount) : 0;
+          const netGoldChange = rawPrize - jokerPenalty;
+
+          state.gold = Math.max(0, state.gold + rawPrize - jokerPenalty);
+          state.activeBuffs = [];
+
+          let triggeredJackpotPrize = 0;
+
+          if (isFullGridJackpot && rawPrize > 0) {
+            triggeredJackpotPrize = rawPrize;
+            addHistory('¡PREMIO MAYOR 9/9 ' + firstSym + '!', '+' + formatGold(rawPrize) + ' ORO', 'deposit');
+            playSound('special');
+            document.getElementById('slot-status-msg').innerHTML =
+              '<span class="text-yellow-300">¡PREMIO MAYOR 9/9 con ' + firstSym + '! +' + formatGold(rawPrize) + ' ORO</span>';
+          } else if (netGoldChange > 0) {
+            addHistory('Rodillos (' + winningLines.length + ' líns)', '+' + formatGold(netGoldChange) + ' ORO', 'gain');
+            playSound(rawPrize >= betUsed * 2 ? 'special' : 'star');
+            document.getElementById('slot-status-msg').innerHTML =
+              '<span class="text-emerald-400">¡' + winningLines.length + ' línea(s)! +' + formatGold(rawPrize) + ' ORO' + (jokerPenalty > 0 ? ' (-' + formatGold(jokerPenalty) + ' por 🃏)' : '') + '</span>';
+          } else if (jokerPenalty > 0) {
+            const totalLost = betUsed + jokerPenalty;
+            addHistory('Trampa 🃏 x' + jokerCount, '-' + formatGold(totalLost) + ' ORO', 'loss');
+            playSound('spark');
+            document.getElementById('slot-status-msg').innerHTML =
+              '<span class="text-rose-400">¡Salió 🃏! Perdiste tu apuesta y ' + formatGold(jokerPenalty) + ' ORO extra de penalización.</span>';
+          } else {
+            addHistory('Rodillos 9 sím.', '-' + formatGold(betUsed) + ' ORO', 'loss');
+            document.getElementById('slot-status-msg').innerHTML =
+              '<span class="text-slate-300">Sin líneas premiadas esta vez (-' + formatGold(betUsed) + ' ORO).</span>';
+          }
+
+          isSlotSpinning = false;
+          document.getElementById('open-wheel-btn').classList.remove('pointer-events-none', 'opacity-40');
+          saveState();
+          updateUI();
+
+          if (isFullGridJackpot && triggeredJackpotPrize > 0) {
+            openJackpotBanner(firstSym, triggeredJackpotPrize);
+          } else {
+            maybeTriggerAutoWheel();
+          }
+        }
+      }, 75);
+    }
+
+    loadState();
+  </script>
+</body>
+</html>

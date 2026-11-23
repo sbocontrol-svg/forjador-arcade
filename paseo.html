@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Paseo del Taller — Forjador de Oro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f17;
+      color: #f8fafc;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.85); opacity: 1; }
+      100% { transform: translateY(-48px) scale(1.15); opacity: 0; }
+    }
+
+    .floating-gain {
+      position: absolute;
+      pointer-events: none;
+      font-weight: 800;
+      animation: floatUp 0.7s ease-out forwards;
+      z-index: 30;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.85);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25); }
+      50% { box-shadow: 0 0 28px rgba(245, 158, 11, 0.55); }
+    }
+
+    .gold-glow {
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    @keyframes wheelFloat {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
+    }
+
+    @keyframes wheelPulseRing {
+      0% { transform: scale(0.95); opacity: 0.85; }
+      70% { transform: scale(1.28); opacity: 0; }
+      100% { transform: scale(1.28); opacity: 0; }
+    }
+
+    @keyframes glintSweep {
+      0%, 65% { transform: translateX(-140%) rotate(25deg); }
+      100% { transform: translateX(180%) rotate(25deg); }
+    }
+
+    .floating-roulette-btn {
+      animation: wheelFloat 2.8s ease-in-out infinite;
+      pointer-events: auto !important;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .floating-roulette-btn.is-dragging {
+      animation: none !important;
+      transform: scale(1.08);
+      cursor: grabbing;
+    }
+
+    .floating-roulette-ring {
+      animation: wheelPulseRing 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+      pointer-events: none;
+    }
+
+    .glint-bar {
+      position: absolute;
+      top: -20%;
+      left: 0;
+      width: 35%;
+      height: 140%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+      animation: glintSweep 3.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid #fbbf24;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.8));
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-5 max-w-md mx-auto relative">
+
+  <button id="open-wheel-btn" type="button" style="right: 10px; top: 24%;" class="fixed z-40 floating-roulette-btn group focus:outline-none">
+    <span class="absolute inset-0 rounded-full bg-purple-500/40 floating-roulette-ring"></span>
+    <div class="relative w-16 h-16 rounded-full bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-700 border-2 border-amber-300/80 shadow-[0_8px_24px_rgba(147,51,234,0.65)] flex flex-col items-center justify-center overflow-hidden pointer-events-none">
+      <div class="glint-bar"></div>
+      <span class="text-xl leading-none drop-shadow">🎡</span>
+      <span class="text-[9px] font-black uppercase tracking-tighter text-amber-200 mt-0.5">Ruleta</span>
+      <span id="floating-spins-badge" class="text-[9px] font-bold mono bg-black/45 px-1.5 rounded-full text-white leading-tight mt-0.5">3/3</span>
+    </div>
+  </button>
+
+  <div>
+    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 shadow-lg">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <a href="index.html" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center justify-center font-black shrink-0 transition" title="Volver al inicio">
+          ←
+        </a>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">🛤️ Paseo del Taller</h1>
+          <p id="header-user-subtitle" class="text-[11px] text-slate-400 truncate">1 toque: salto · 2 toques: rayos ⚡</p>
+        </div>
+      </div>
+
+      <button type="button" id="sound-toggle" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition shrink-0" title="Sonido">
+        <span id="sound-icon">🔊</span>
+      </button>
+    </header>
+
+    <div class="mt-2 grid grid-cols-2 gap-2">
+      <button type="button" id="open-msg-btn" class="py-2 px-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>✉️</span>
+        <span>Mensaje</span>
+      </button>
+      <button type="button" id="open-sup-btn" class="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>☕</span>
+        <span>Colaborar</span>
+      </button>
+    </div>
+
+    <section class="mt-3 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700/80 rounded-2xl p-3.5 shadow-xl">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Tesoro del Taller</span>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span class="text-lg">🪙</span>
+            <span id="total-gold" class="text-2xl sm:text-3xl font-black mono tracking-tight text-amber-300">1.000</span>
+            <span class="text-[11px] font-bold text-amber-400/80">ORO</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="rank-title" class="font-extrabold text-amber-400 text-xs block">🔨 Aprendiz</span>
+          <span id="wheel-trigger-hint" class="text-[10px] text-amber-300/90 block">Ruleta auto: 0/4 paseos</span>
+          <span id="best-record-badge" class="text-[10px] font-bold text-emerald-400 mono">Récord: 0</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="active-buffs-banner" class="hidden mt-2.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-900/70 via-indigo-900/70 to-purple-900/70 border border-purple-500/50 flex-col gap-1 text-xs shadow-md">
+      <div class="flex items-center justify-between">
+        <span class="text-purple-200 font-bold text-[10px] uppercase tracking-wider">✨ Bonos y mejoras activas</span>
+        <span class="px-2 py-0.5 rounded bg-purple-500/30 text-purple-100 font-bold text-[10px]">ACTIVOS</span>
+      </div>
+      <div id="active-buffs-chips" class="flex flex-wrap gap-1.5"></div>
+    </div>
+
+    <section class="mt-2.5 flex items-center justify-between bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 text-xs">
+      <div class="flex items-center gap-1.5">
+        <span>📏</span>
+        <span class="text-slate-400">Distancia:</span>
+        <span id="distance-display" class="font-bold mono text-amber-400 text-sm">0 m</span>
+      </div>
+      <div class="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+        <span id="speed-badge" class="font-extrabold text-sky-400 mono">Ritmo 1.0x</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-slate-400">Botín:</span>
+        <span id="ride-gold-display" class="font-bold mono text-emerald-400 text-sm">+0 ORO</span>
+      </div>
+    </section>
+
+    <main id="ride-arena" class="mt-2.5 relative w-full h-64 sm:h-72 rounded-2xl border-2 border-slate-800 bg-gradient-to-b from-sky-950/60 via-slate-900 to-slate-950 overflow-hidden shadow-xl">
+      <canvas id="ride-canvas" class="w-full h-full block"></canvas>
+
+      <div id="ride-idle-overlay" class="absolute inset-0 bg-slate-950/75 backdrop-blur-[2px] flex flex-col items-center justify-center text-center px-5 z-20">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center mx-auto mb-2 text-amber-400 text-xl">
+          🛵
+        </div>
+        <h2 class="text-base font-bold text-white">¡Paseo por las lomadas del taller!</h2>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          Mantené <b>IMPULSAR</b> a la derecha para avanzar. Con <b>SALTAR</b> a la izquierda: 1 toque salta bajo, 2 toques seguidos llegan a los ⚡ rayos (+35 ORO).
+        </p>
+      </div>
+
+      <div id="ride-summary-overlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex-col items-center justify-center text-center px-5 z-30">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-400">¡Fin del Paseo!</span>
+        <p id="ride-summary-gold" class="text-3xl font-black mono text-emerald-400 mt-1">+0 ORO</p>
+        <p id="ride-summary-detail" class="text-xs text-slate-300 mt-1.5">Recorriste 0 m</p>
+        <div class="flex flex-wrap justify-center gap-2 mt-4">
+          <button type="button" id="send-mark-btn" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg transition">
+            ✉️ Mandar marca
+          </button>
+          <a href="index.html" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center">
+            Inicio
+          </a>
+          <button type="button" id="ride-new-btn" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm shadow-lg transition">
+            Nuevo Paseo
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <section class="mt-3 grid grid-cols-1 gap-2">
+      <button type="button" id="ride-start-btn" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg gold-glow flex items-center justify-center gap-2 transition active:scale-95">
+        <span>🚀</span>
+        <span>Salir a Pasear</span>
+      </button>
+
+      <div id="ride-controls-row" class="hidden grid grid-cols-2 gap-2">
+        <button type="button" id="ride-jump-btn" class="w-full py-4 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 active:from-emerald-400 text-slate-950 font-black text-sm shadow-lg flex flex-col items-center justify-center leading-tight">
+          <span>⬆️ SALTAR</span>
+          <span class="text-[10px] font-extrabold opacity-90">1x bajo · 2x rayos</span>
+        </button>
+
+        <button type="button" id="ride-boost-btn" class="w-full py-4 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 active:from-amber-400 text-slate-950 font-black text-sm shadow-lg flex flex-col items-center justify-center leading-tight ring-2 ring-amber-300/70">
+          <span>⚡ IMPULSAR</span>
+          <span id="boost-state-hint" class="text-[10px] font-extrabold opacity-90">Mantené apretado</span>
+        </button>
+      </div>
+    </section>
+
+    <p id="debug-status-line" class="mt-2 text-[10px] mono text-slate-500 text-center truncate"></p>
+  </div>
+
+  <!-- MODAL MENSAJE -->
+  <div id="message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border-2 border-indigo-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl my-auto">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-indigo-300">✉️ Mensaje al Diseñador</h3>
+        <button type="button" id="close-msg-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Escribí tu mensaje y elegí enviarlo por WhatsApp o correo electrónico.
+      </p>
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Tu mensaje</label>
+      <textarea id="player-message-text" rows="3" placeholder="Ej: ¡Qué bueno quedó el taller! Probé el paseo y me encantó." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-xs focus:outline-none focus:border-indigo-400"></textarea>
+      <label class="mt-2.5 flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+        <input id="include-stats-checkbox" type="checkbox" checked class="rounded border-slate-600 bg-slate-950 text-indigo-500 focus:ring-0" />
+        <span>Incluir datos de la partida (apodo, oro, récord y visitas)</span>
+      </label>
+      <p id="message-feedback-msg" class="hidden mt-2 text-[11px] font-bold text-rose-400"></p>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button type="button" id="send-wa-btn" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>💬</span>
+          <span>WhatsApp</span>
+        </button>
+        <button type="button" id="send-mail-btn" class="py-2.5 px-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>📧</span>
+          <span>Correo</span>
+        </button>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-800">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-2">Destino de contacto (guardado acá)</span>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">WhatsApp (ej: 5492364000000)</label>
+            <input id="creator-whatsapp-input" type="tel" placeholder="5492364502082" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Correo electrónico</label>
+            <input id="creator-email-input" type="email" placeholder="sbocontrol@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+        <button type="button" id="save-contact-btn" class="w-full mt-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 font-bold text-xs transition">
+          Guardar contacto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL COLABORACIÓN -->
+  <div id="support-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-amber-400">☕ Colaboración para el Diseñador</h3>
+        <button type="button" id="close-sup-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Espacio de colaboración voluntaria para quien diseña y desarrolla el taller. Guardá tu enlace cuando lo tengas listo.
+      </p>
+      <div id="support-link-ready-box" class="hidden mb-3 p-3 rounded-xl bg-slate-950 border border-emerald-500/40">
+        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">Enlace de colaboración listo</span>
+        <p id="support-link-preview" class="text-xs mono text-slate-200 break-all mb-2.5"></p>
+        <a id="support-external-anchor" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>🚀</span>
+          <span>Ir a colaborar</span>
+        </a>
+      </div>
+      <div id="support-link-empty-box" class="mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400">
+        Todavía no cargaste un enlace de colaboración. Pegá acá tu link cuando quieras.
+      </div>
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Enlace de colaboración</label>
+      <input id="support-url-input" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
+      <p id="support-error-msg" class="hidden mt-1.5 text-[11px] font-bold text-rose-400"></p>
+      <div class="flex gap-2 mt-3.5">
+        <button type="button" id="save-sup-btn" class="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
+          Guardar enlace
+        </button>
+        <button type="button" id="close-sup-btn-2" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL RULETA -->
+  <div id="wheel-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border-2 border-purple-500/60 rounded-3xl p-5 w-full max-w-sm shadow-2xl relative flex flex-col items-center my-auto">
+      <button type="button" id="close-wheel-btn" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">✕</button>
+      <div class="text-center mb-2">
+        <h3 class="text-lg font-black text-amber-400 tracking-tight">Ruleta del Taller</h3>
+        <p id="wheel-mode-caption" class="text-[11px] text-slate-300">Acumulá hasta 3 bonos para el Paseo.</p>
+        <div class="mt-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-purple-950 border border-purple-500/50 text-xs font-bold text-purple-200">
+          <span>Tiradas restantes:</span>
+          <span id="modal-spins-counter" class="mono text-amber-300">3 de 3</span>
+        </div>
+      </div>
+      <div class="relative w-60 h-60 sm:w-64 sm:h-64 my-2 flex items-center justify-center">
+        <div class="wheel-pointer absolute -top-2 z-20"></div>
+        <svg id="wheel-spinner" viewBox="0 0 300 300" class="w-full h-full rounded-full shadow-[0_0_30px_rgba(245,158,11,0.3)] border-4 border-amber-400 will-change-transform">
+          <path d="M150,150 L150,0 A150,150 0 0,1 279.9,75 Z" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(30 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🔥</text><text x="150" y="62" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="800">Doble x2</text></g>
+          <path d="M150,150 L279.9,75 A150,150 0 0,1 279.9,225 Z" fill="#059669" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(90 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🪙</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">+250 Oro</text></g>
+          <path d="M150,150 L279.9,225 A150,150 0 0,1 150,300 Z" fill="#7c3aed" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(150 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">🃏</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Joker +15%</text></g>
+          <path d="M150,150 L150,300 A150,150 0 0,1 20.1,225 Z" fill="#d97706" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(210 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">⭐</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Estrellas x2</text></g>
+          <path d="M150,150 L20.1,225 A150,150 0 0,1 20.1,75 Z" fill="#dc2626" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(270 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">💥</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">Chispa -100</text></g>
+          <path d="M150,150 L20.1,75 A150,150 0 0,1 150,0 Z" fill="#0284c7" stroke="#fbbf24" stroke-width="2"/>
+          <g transform="rotate(330 150 150)"><text x="150" y="38" text-anchor="middle" font-size="22">⏱️</text><text x="150" y="62" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">+1 Giro</text></g>
+          <circle cx="150" cy="150" r="24" fill="#0f172a" stroke="#fbbf24" stroke-width="3"/>
+          <text x="150" y="156" text-anchor="middle" fill="#fbbf24" font-size="16" font-weight="bold">⚡</text>
+        </svg>
+      </div>
+      <div id="wheel-result-box" class="hidden w-full text-center p-2.5 rounded-xl bg-slate-800/90 border border-slate-700 mt-1">
+        <p id="wheel-result-title" class="font-extrabold text-sm text-amber-400">¡Premio!</p>
+        <p id="wheel-result-desc" class="text-xs text-slate-300 mt-0.5">Descripción</p>
+      </div>
+      <div id="wheel-accumulated-box" class="hidden w-full mt-2 p-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-center">
+        <span class="text-[10px] uppercase tracking-wider text-purple-300 font-bold block">Bonos acumulados</span>
+        <div id="modal-buff-list" class="flex flex-wrap justify-center gap-1 mt-1"></div>
+      </div>
+      <div class="w-full mt-3 flex flex-col gap-2">
+        <button type="button" id="spin-action-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-slate-950 font-black text-sm shadow-lg transition active:scale-95">
+          ¡Girar Ruleta!
+        </button>
+        <button type="button" id="close-wheel-btn-2" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/40 font-bold text-xs transition">
+          Seguir en el Paseo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('error', (ev) => {
+      const line = document.getElementById('debug-status-line');
+      if (line) line.textContent = 'Error JS: ' + (ev.message || 'desconocido') + ' (línea ' + (ev.lineno || '?') + ')';
+    });
+
+    const STORAGE_KEY = 'forjador_oro_arcade_v3';
+    const MAX_SPINS_PER_ROUND_CYCLE = 3;
+    const RIDE_WHEEL_EVERY = 4;
+    const DOUBLE_TAP_WINDOW_MS = 320;
+
+    let state = {
+      gold: 1000,
+      bestRoundGold: 0,
+      roundsPlayed: 0,
+      totalTaps: 0,
+      visitsCount: 0,
+      ridesSinceWheel: 0,
+      bestRideMeters: 0,
+      anvilLevel: 1,
+      rideLevel: 1,
+      wheelLevel: 1,
+      shieldCharges: 0,
+      nickname: '',
+      supportUrl: '',
+      creatorWhatsApp: '5492364502082',
+      creatorEmail: 'sbocontrol@gmail.com',
+      history: [],
+      soundEnabled: true,
+      activeBuffs: [],
+      spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
+      wheelPos: null
+    };
+
+    let isRiding = false;
+    let rideAnimId = null;
+    let lastFrameTime = 0;
+    let distanceMeters = 0;
+    let rideGold = 0;
+    let speedMult = 1.0;
+    let hazardCooldown = 0;
+
+    let worldScroll = 0;
+    let riderY = 0;
+    let riderVy = 0;
+    let isGrounded = true;
+    let isBoosting = false;
+    let lastJumpTapTime = 0;
+    let collectibles = [];
+    let hazards = [];
+    let spawnTimer = 0;
+
+    let currentWheelAngle = 0;
+    let isSpinning = false;
+    let spinAnimFrame = null;
+
+    const wheelSegments = [
+      { id: 'double', emoji: '🔥', title: '¡Doble Forja x2!', chip: '🔥 Doble x2', desc: 'Duplica las monedas, estrellas y rayos del Paseo.' },
+      { id: 'gold250', emoji: '🪙', title: '¡Bolsa de +250 ORO!', chip: '🪙 +250 Oro', desc: 'Sumaste 250 monedas de oro directo a tu tesoro.' },
+      { id: 'joker', emoji: '🃏', title: '¡Comodín Joker +15%!', chip: '🃏 Joker +15%', desc: 'Suma +15% extra al botín final del Paseo.' },
+      { id: 'stars', emoji: '⭐', title: '¡Estrellas Dobles!', chip: '⭐ Estrellas x2', desc: 'Estrellas valen x2 en el Paseo.' },
+      { id: 'spark', emoji: '💥', title: '¡Chispa Rebelde!', chip: '💥 Chispa -100', desc: 'Saltó una chispa y perdiste 100 ORO (mínimo 0).' },
+      { id: 'time', emoji: '⏱️', title: '¡Giro Extra de Ruleta!', chip: '⏱️ +1 Giro', desc: 'Sumaste +1 giro extra de ruleta.' }
+    ];
+
+    function formatGold(num) {
+      return Math.floor(num).toLocaleString('es-AR');
+    }
+
+    function hasBuff(id) {
+      return Array.isArray(state.activeBuffs) && state.activeBuffs.includes(id);
+    }
+
+    function addBuff(id) {
+      if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+      if (!state.activeBuffs.includes(id)) state.activeBuffs.push(id);
+    }
+
+    function getRankInfo() {
+      const t = state.totalTaps;
+      if (t < 25) return { name: '🔨 Aprendiz' };
+      if (t < 75) return { name: '⚒️ Oficial' };
+      if (t < 150) return { name: '⚡ Maestro Herrero' };
+      return { name: '👑 Leyenda del Taller' };
+    }
+
+    function addHistory(text, amountStr, type = 'gain') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      state.history.unshift({ time: timeStr, text, amount: amountStr, type });
+      if (state.history.length > 20) state.history.pop();
+    }
+
+    function renderActiveChips(containerId) {
+      const el = document.getElementById(containerId);
+      if (!el) return false;
+      const chips = [];
+      (state.activeBuffs || []).forEach(id => {
+        const seg = wheelSegments.find(s => s.id === id);
+        if (seg) chips.push(seg.chip);
+      });
+      if ((state.rideLevel || 1) > 1) {
+        chips.push('🛵 Moto Nv.' + state.rideLevel + ' (+' + (state.rideLevel * 5) + ' ORO)');
+      }
+      if ((state.shieldCharges || 0) > 0) {
+        chips.push('🛡️ Rescoldo x' + state.shieldCharges);
+      }
+      el.innerHTML = chips.map(label =>
+        '<span class="px-2 py-0.5 rounded-full bg-slate-950/90 border border-amber-400/40 text-amber-200 font-bold text-[10px]">' + label + '</span>'
+      ).join('');
+      return chips.length > 0;
+    }
+
+    function updateUI() {
+      const rank = getRankInfo();
+      document.getElementById('total-gold').textContent = formatGold(state.gold);
+      document.getElementById('best-record-badge').textContent = 'Récord: ' + formatGold(state.bestRoundGold);
+      document.getElementById('rank-title').textContent = rank.name;
+      document.getElementById('wheel-trigger-hint').textContent = 'Ruleta auto: ' + (state.ridesSinceWheel || 0) + '/' + RIDE_WHEEL_EVERY + ' paseos';
+      document.getElementById('floating-spins-badge').textContent = state.spinsLeft + '/' + MAX_SPINS_PER_ROUND_CYCLE;
+      document.getElementById('modal-spins-counter').textContent = state.spinsLeft + ' de ' + MAX_SPINS_PER_ROUND_CYCLE;
+      document.getElementById('header-user-subtitle').textContent =
+        (state.nickname ? state.nickname + ' · ' : '') + 'Mejor tramo: ' + formatGold(state.bestRideMeters || 0) + ' m';
+      document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
+
+      document.getElementById('distance-display').textContent = Math.floor(distanceMeters) + ' m';
+      document.getElementById('speed-badge').textContent = 'Ritmo ' + speedMult.toFixed(1) + 'x';
+      document.getElementById('ride-gold-display').textContent = '+' + formatGold(rideGold) + ' ORO';
+
+      const boostHint = document.getElementById('boost-state-hint');
+      const boostBtn = document.getElementById('ride-boost-btn');
+      if (boostHint && boostBtn) {
+        if (isBoosting) {
+          boostHint.textContent = 'Impulsando activo';
+          boostBtn.classList.add('ring-2', 'ring-amber-200');
+        } else {
+          boostHint.textContent = 'Soltado · Mantené';
+          boostBtn.classList.remove('ring-2', 'ring-amber-200');
+        }
+      }
+
+      const buffBanner = document.getElementById('active-buffs-banner');
+      const hasAnyBannerChip = renderActiveChips('active-buffs-chips');
+      if (hasAnyBannerChip) {
+        buffBanner.classList.remove('hidden');
+        buffBanner.style.display = 'flex';
+      } else {
+        buffBanner.classList.add('hidden');
+        buffBanner.style.display = 'none';
+      }
+
+      const modalBuffBox = document.getElementById('wheel-accumulated-box');
+      if (Array.isArray(state.activeBuffs) && state.activeBuffs.length > 0) {
+        renderActiveChips('modal-buff-list');
+        modalBuffBox.classList.remove('hidden');
+      } else {
+        modalBuffBox.classList.add('hidden');
+      }
+    }
+
+    function maybeTriggerAutoWheel() {
+      if (isRiding || isSpinning) return;
+      if (state.spinsLeft <= 0) return;
+      if ((state.ridesSinceWheel || 0) >= RIDE_WHEEL_EVERY) {
+        state.ridesSinceWheel = 0;
+        saveState();
+        openWheelModal('¡Hiciste 4 paseos! Probá la ruleta y acumulá bonos.');
+      }
+    }
+
+    function initDraggableWheelButton() {
+      const btn = document.getElementById('open-wheel-btn');
+      let isDragging = false;
+      let hasMoved = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+
+      if (state.wheelPos && typeof state.wheelPos.left === 'number' && typeof state.wheelPos.top === 'number') {
+        btn.style.right = 'auto';
+        btn.style.left = state.wheelPos.left + 'px';
+        btn.style.top = state.wheelPos.top + 'px';
+      }
+
+      const onStart = (clientX, clientY) => {
+        if (isRiding) return;
+        const rect = btn.getBoundingClientRect();
+        isDragging = true;
+        hasMoved = false;
+        startX = clientX;
+        startY = clientY;
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        btn.classList.add('is-dragging');
+      };
+
+      const onMove = (clientX, clientY) => {
+        if (!isDragging) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) hasMoved = true;
+        if (hasMoved) {
+          const maxLeft = window.innerWidth - btn.offsetWidth - 4;
+          const maxTop = window.innerHeight - btn.offsetHeight - 4;
+          btn.style.right = 'auto';
+          btn.style.left = Math.max(4, Math.min(maxLeft, initialLeft + dx)) + 'px';
+          btn.style.top = Math.max(4, Math.min(maxTop, initialTop + dy)) + 'px';
+        }
+      };
+
+      const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        btn.classList.remove('is-dragging');
+        if (hasMoved) {
+          state.wheelPos = { left: parseFloat(btn.style.left), top: parseFloat(btn.style.top) };
+          saveState();
+        } else {
+          openWheelModal();
+        }
+      };
+
+      btn.addEventListener('touchstart', (e) => { if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchmove', (e) => { if (isDragging && e.touches.length === 1) { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+      window.addEventListener('touchend', onEnd);
+      btn.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+      window.addEventListener('mousemove', (e) => { if (isDragging) onMove(e.clientX, e.clientY); });
+      window.addEventListener('mouseup', onEnd);
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = Object.assign({}, state, parsed);
+          if (!state.creatorWhatsApp) state.creatorWhatsApp = '5492364502082';
+          if (!state.creatorEmail) state.creatorEmail = 'sbocontrol@gmail.com';
+          if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
+          if (typeof state.ridesSinceWheel !== 'number') state.ridesSinceWheel = 0;
+          if (typeof state.bestRideMeters !== 'number') state.bestRideMeters = 0;
+          if (typeof state.rideLevel !== 'number') state.rideLevel = 1;
+          if (typeof state.shieldCharges !== 'number') state.shieldCharges = 0;
+          if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+        }
+      } catch (e) {}
+      saveState();
+      updateUI();
+      initDraggableWheelButton();
+      resizeCanvas();
+      drawIdleScene();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function openMessageModal(prefillRecord) {
+      if (isRiding) return;
+      document.getElementById('creator-whatsapp-input').value = state.creatorWhatsApp || '';
+      document.getElementById('creator-email-input').value = state.creatorEmail || '';
+      document.getElementById('message-feedback-msg').classList.add('hidden');
+      const msgEl = document.getElementById('player-message-text');
+      if (prefillRecord) {
+        msgEl.value = '¡Hola! Hice un paseo de ' + formatGold(state.bestRideMeters || 0) + ' m en el taller.';
+      } else if (!msgEl.value.trim()) {
+        msgEl.value = '¡Hola! Estuve probando el Paseo en el taller.';
+      }
+      const modal = document.getElementById('message-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeMessageModal() {
+      const modal = document.getElementById('message-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveContactConfig() {
+      state.creatorWhatsApp = document.getElementById('creator-whatsapp-input').value.replace(/\D/g, '');
+      state.creatorEmail = document.getElementById('creator-email-input').value.trim();
+      saveState();
+      const fb = document.getElementById('message-feedback-msg');
+      fb.textContent = '✅ Contacto guardado en este dispositivo.';
+      fb.className = 'mt-2 text-[11px] font-bold text-emerald-400';
+      fb.classList.remove('hidden');
+    }
+
+    function buildFullMessageBody() {
+      const customText = document.getElementById('player-message-text').value.trim();
+      const includeStats = document.getElementById('include-stats-checkbox').checked;
+      let body = customText || '¡Hola! Probé el Paseo.';
+      if (includeStats) {
+        const nick = state.nickname || 'Invitado';
+        body += '\n\n— Datos del taller —\nHerrero: ' + nick + '\nOro actual: ' + formatGold(state.gold) + '\nMejor paseo: ' + formatGold(state.bestRideMeters || 0) + ' m\nRécord de ronda: ' + formatGold(state.bestRoundGold) + '\nVisitas: ' + formatGold(state.visitsCount);
+      }
+      return body;
+    }
+
+    function sendViaWhatsApp() {
+      const fb = document.getElementById('message-feedback-msg');
+      const phone = (document.getElementById('creator-whatsapp-input').value || state.creatorWhatsApp || '').replace(/\D/g, '');
+      if (!phone) {
+        fb.textContent = '⚠️ Primero cargá y guardá un número de WhatsApp.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorWhatsApp = phone;
+      saveState();
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildFullMessageBody()), '_blank', 'noopener,noreferrer');
+    }
+
+    function sendViaEmail() {
+      const fb = document.getElementById('message-feedback-msg');
+      const email = (document.getElementById('creator-email-input').value || state.creatorEmail || '').trim();
+      if (!email) {
+        fb.textContent = '⚠️ Primero cargá y guardá un correo electrónico.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorEmail = email;
+      saveState();
+      window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Paseo del Taller') + '&body=' + encodeURIComponent(buildFullMessageBody());
+    }
+
+    function openSupportModal() {
+      if (isRiding) return;
+      const input = document.getElementById('support-url-input');
+      const err = document.getElementById('support-error-msg');
+      const readyBox = document.getElementById('support-link-ready-box');
+      const emptyBox = document.getElementById('support-link-empty-box');
+      input.value = state.supportUrl || '';
+      err.classList.add('hidden');
+      if (state.supportUrl) {
+        document.getElementById('support-link-preview').textContent = state.supportUrl;
+        document.getElementById('support-external-anchor').href = state.supportUrl;
+        readyBox.classList.remove('hidden');
+        emptyBox.classList.add('hidden');
+      } else {
+        readyBox.classList.add('hidden');
+        emptyBox.classList.remove('hidden');
+      }
+      const modal = document.getElementById('support-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeSupportModal() {
+      const modal = document.getElementById('support-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveSupportUrl() {
+      const raw = document.getElementById('support-url-input').value.trim();
+      const err = document.getElementById('support-error-msg');
+      if (!raw) {
+        state.supportUrl = '';
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+        return;
+      }
+      const normalized = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+      try {
+        const parsed = new URL(normalized);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error();
+        state.supportUrl = parsed.toString();
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+      } catch (e) {
+        err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
+        err.classList.remove('hidden');
+      }
+    }
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtor) audioCtx = new AudioCtor();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'jump') {
+          osc.frequency.setValueAtTime(340, now);
+          osc.frequency.exponentialRampToValueAtTime(620, now + 0.11);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now); osc.stop(now + 0.12);
+        } else if (type === 'boost') {
+          osc.frequency.setValueAtTime(480, now);
+          osc.frequency.exponentialRampToValueAtTime(920, now + 0.16);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+          osc.start(now); osc.stop(now + 0.17);
+        } else if (type === 'coin') {
+          osc.frequency.setValueAtTime(659.25, now);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'star') {
+          osc.frequency.setValueAtTime(783.99, now);
+          osc.frequency.setValueAtTime(987.77, now + 0.05);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'bolt') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(980, now);
+          osc.frequency.exponentialRampToValueAtTime(1480, now + 0.14);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          osc.start(now); osc.stop(now + 0.18);
+        } else if (type === 'crash') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(175, now);
+          osc.frequency.exponentialRampToValueAtTime(65, now + 0.25);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+          osc.start(now); osc.stop(now + 0.26);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      saveState();
+      updateUI();
+    }
+
+    function syncWheelButtons() {
+      const spinBtn = document.getElementById('spin-action-btn');
+      if (state.spinsLeft <= 0) {
+        spinBtn.disabled = true;
+        spinBtn.classList.add('opacity-50');
+        spinBtn.textContent = 'Sin tiradas disponibles';
+      } else {
+        spinBtn.disabled = false;
+        spinBtn.classList.remove('opacity-50');
+        spinBtn.textContent = '¡Girar Ruleta! (' + state.spinsLeft + ' restantes)';
+      }
+    }
+
+    function openWheelModal(customCaption) {
+      if (isRiding) return;
+      document.getElementById('wheel-result-box').classList.add('hidden');
+      document.getElementById('wheel-mode-caption').textContent =
+        customCaption || 'Acumulá hasta 3 bonos para el Paseo.';
+      syncWheelButtons();
+      updateUI();
+      const modal = document.getElementById('wheel-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeWheelModal() {
+      if (isSpinning) return;
+      const modal = document.getElementById('wheel-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      updateUI();
+    }
+
+    function spinWheel() {
+      if (isSpinning || state.spinsLeft <= 0) return;
+      isSpinning = true;
+      state.spinsLeft -= 1;
+      saveState();
+      updateUI();
+
+      const spinBtn = document.getElementById('spin-action-btn');
+      spinBtn.disabled = true;
+      spinBtn.classList.add('opacity-50');
+      spinBtn.textContent = 'Girando...';
+
+      const targetIndex = Math.floor(Math.random() * 6);
+      const targetAngleMod = (360 - (targetIndex * 60 + 30) + 360) % 360;
+      const currentMod = ((currentWheelAngle % 360) + 360) % 360;
+      const extraRotation = (targetAngleMod - currentMod + 360) % 360;
+      const totalDelta = (360 * 6) + extraRotation;
+      const duration = 3200;
+      const startTime = performance.now();
+      const spinner = document.getElementById('wheel-spinner');
+
+      function animateWheel(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const angleNow = currentWheelAngle + totalDelta * (1 - Math.pow(1 - progress, 3));
+        spinner.style.transform = 'rotate(' + angleNow + 'deg)';
+        if (progress < 1) {
+          spinAnimFrame = requestAnimationFrame(animateWheel);
+        } else {
+          currentWheelAngle += totalDelta;
+          isSpinning = false;
+          const won = wheelSegments[targetIndex];
+          document.getElementById('wheel-result-box').classList.remove('hidden');
+          document.getElementById('wheel-result-title').textContent = won.emoji + ' ' + won.title;
+          document.getElementById('wheel-result-desc').textContent = won.desc;
+
+          if (won.id === 'gold250') {
+            playSound('star');
+            state.gold += 250;
+            addHistory('Ruleta +250 ORO', '+250 ORO', 'deposit');
+          } else if (won.id === 'time') {
+            playSound('star');
+            state.spinsLeft = Math.min(MAX_SPINS_PER_ROUND_CYCLE, state.spinsLeft + 1);
+            addHistory('Ruleta +1 Giro', '+1 Giro', 'deposit');
+          } else if (won.id === 'spark') {
+            playSound('crash');
+            const lost = Math.min(100, state.gold);
+            state.gold -= lost;
+            addHistory('Chispa en la ruleta', '-' + lost + ' ORO', 'loss');
+          } else {
+            playSound('star');
+            addBuff(won.id);
+            addHistory('Bono: ' + won.chip, 'Acumulado', 'deposit');
+          }
+
+          saveState();
+          updateUI();
+          syncWheelButtons();
+        }
+      }
+      spinAnimFrame = requestAnimationFrame(animateWheel);
+    }
+
+    const canvas = document.getElementById('ride-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const arena = document.getElementById('ride-arena');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = arena.clientWidth || 340;
+      const h = arena.clientHeight || 256;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      if (!isRiding) drawIdleScene();
+    });
+
+    function getGroundYAt(xScreen) {
+      const h = canvas.clientHeight || 256;
+      const base = h * 0.72;
+      const wave1 = Math.sin((xScreen + worldScroll) * 0.018) * 18;
+      const wave2 = Math.cos((xScreen + worldScroll) * 0.007) * 10;
+      return base + wave1 + wave2;
+    }
+
+    function showRideFloatingText(x, y, text, colorClass) {
+      const arena = document.getElementById('ride-arena');
+      const el = document.createElement('div');
+      el.className = 'floating-gain text-xs mono ' + colorClass;
+      el.style.left = Math.max(12, Math.min((arena.clientWidth || 340) - 95, x)) + 'px';
+      el.style.top = Math.max(12, Math.min((arena.clientHeight || 256) - 40, y)) + 'px';
+      el.textContent = text;
+      arena.appendChild(el);
+      setTimeout(() => el.remove(), 700);
+    }
+
+    function handleJumpPress() {
+      if (!isRiding) return;
+      const now = performance.now();
+      const isDoubleTap = (now - lastJumpTapTime) <= DOUBLE_TAP_WINDOW_MS;
+      lastJumpTapTime = now;
+
+      const w = canvas.clientWidth || 340;
+      const riderX = Math.min(90, w * 0.24);
+      const riderDrawY = getGroundYAt(riderX) + riderY;
+
+      if (isDoubleTap && (!isGrounded || riderY < -8)) {
+        riderVy = Math.min(riderVy - 250, -580);
+        playSound('boost');
+        showRideFloatingText(riderX, riderDrawY - 34, '⚡ DOBLE SALTO', 'text-cyan-300');
+        return;
+      }
+
+      if (isGrounded) {
+        riderVy = isDoubleTap ? -570 : -395;
+        isGrounded = false;
+        playSound(isDoubleTap ? 'boost' : 'jump');
+        if (isDoubleTap) {
+          showRideFloatingText(riderX, riderDrawY - 34, '⚡ SALTO ALTO', 'text-cyan-300');
+        }
+      } else if (isDoubleTap) {
+        riderVy = Math.min(riderVy - 220, -540);
+        playSound('boost');
+        showRideFloatingText(riderX, riderDrawY - 34, '⚡ IMPULSO RAYOS', 'text-cyan-300');
+      }
+    }
+
+    function setBoostState(active) {
+      if (!isRiding) {
+        isBoosting = false;
+        return;
+      }
+      isBoosting = active;
+      updateUI();
+    }
+
+    function bindControlButtons() {
+      const jumpBtn = document.getElementById('ride-jump-btn');
+      const boostBtn = document.getElementById('ride-boost-btn');
+
+      const onJumpDown = (e) => {
+        if (!isRiding) return;
+        e.preventDefault();
+        handleJumpPress();
+      };
+
+      jumpBtn.addEventListener('touchstart', onJumpDown, { passive: false });
+      jumpBtn.addEventListener('mousedown', onJumpDown);
+
+      const onBoostDown = (e) => {
+        if (!isRiding) return;
+        e.preventDefault();
+        setBoostState(true);
+      };
+
+      const onBoostUp = () => {
+        if (isBoosting) setBoostState(false);
+      };
+
+      boostBtn.addEventListener('touchstart', onBoostDown, { passive: false });
+      boostBtn.addEventListener('mousedown', onBoostDown);
+      window.addEventListener('touchend', onBoostUp);
+      window.addEventListener('touchcancel', onBoostUp);
+      window.addEventListener('mouseup', onBoostUp);
+
+      window.addEventListener('keydown', (e) => {
+        if (!isRiding) return;
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+          e.preventDefault();
+          if (!e.repeat) handleJumpPress();
+        } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+          e.preventDefault();
+          setBoostState(true);
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+          setBoostState(false);
+        }
+      });
+    }
+
+    function spawnRideEntities() {
+      const w = canvas.clientWidth || 340;
+      const h = canvas.clientHeight || 256;
+      const groundAtSpawn = getGroundYAt(w + 24);
+      const roll = Math.random();
+
+      if (roll < 0.32) {
+        const highY = Math.max(22, Math.min(groundAtSpawn - 102, h * 0.20));
+        collectibles.push({
+          x: w + 24,
+          y: highY,
+          kind: 'bolt',
+          collected: false
+        });
+      } else {
+        const isStar = roll < 0.54;
+        const lift = isStar ? 50 : 24;
+        collectibles.push({
+          x: w + 24,
+          y: groundAtSpawn - lift,
+          kind: isStar ? 'star' : 'coin',
+          collected: false
+        });
+      }
+
+      if (distanceMeters > 25 && Math.random() < 0.45) {
+        hazards.push({
+          x: w + 95,
+          w: 24,
+          h: 22
+        });
+      }
+    }
+
+    function renderRideFrame(riderScreenX, riderGroundY, riderDrawY) {
+      const w = canvas.clientWidth || 340;
+      const h = canvas.clientHeight || 256;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let x = 0; x <= w + 12; x += 12) {
+        ctx.lineTo(x, getGroundYAt(x));
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+
+      ctx.beginPath();
+      for (let x = 0; x <= w + 12; x += 12) {
+        const gy = getGroundYAt(x);
+        if (x === 0) ctx.moveTo(x, gy);
+        else ctx.lineTo(x, gy);
+      }
+      ctx.strokeStyle = isBoosting ? '#38bdf8' : '#f59e0b';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      hazards.forEach(hz => {
+        const gy = getGroundYAt(hz.x);
+        ctx.fillText('⚠️', hz.x, gy - 11);
+      });
+
+      collectibles.forEach(item => {
+        if (item.collected) return;
+        if (item.kind === 'bolt') {
+          ctx.save();
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 12;
+          ctx.font = '25px sans-serif';
+          ctx.fillText('⚡', item.x, item.y);
+          ctx.restore();
+        } else {
+          ctx.font = item.kind === 'star' ? '24px sans-serif' : '21px sans-serif';
+          ctx.fillText(item.kind === 'star' ? '⭐' : '🪙', item.x, item.y);
+        }
+      });
+
+      const groundSlope = (getGroundYAt(riderScreenX + 12) - getGroundYAt(riderScreenX - 12)) / 24;
+      const angle = isGrounded ? Math.atan(groundSlope) * 0.65 : (riderVy < 0 ? -0.25 : 0.2);
+
+      ctx.save();
+      ctx.translate(riderScreenX, riderDrawY - 16);
+      ctx.rotate(angle);
+      if (isBoosting) {
+        ctx.font = '18px sans-serif';
+        ctx.fillText('💨', -24, 2);
+      }
+      ctx.font = '28px sans-serif';
+      ctx.fillText('🛵', 0, 0);
+      ctx.restore();
+    }
+
+    function drawIdleScene() {
+      resizeCanvas();
+      const w = canvas.clientWidth || 340;
+      const riderX = Math.min(90, w * 0.24);
+      const gy = getGroundYAt(riderX);
+      renderRideFrame(riderX, gy, gy);
+    }
+
+    function startRide() {
+      if (rideAnimId) {
+        cancelAnimationFrame(rideAnimId);
+        rideAnimId = null;
+      }
+      isRiding = true;
+      lastFrameTime = performance.now();
+      distanceMeters = 0;
+      rideGold = (state.rideLevel || 1) > 1 ? (state.rideLevel - 1) * 5 : 0;
+      speedMult = 1.0;
+      hazardCooldown = 0;
+      worldScroll = 0;
+      riderY = 0;
+      riderVy = 0;
+      isGrounded = true;
+      isBoosting = true;
+      lastJumpTapTime = 0;
+      collectibles = [];
+      hazards = [];
+      spawnTimer = 0.35;
+
+      const idleEl = document.getElementById('ride-idle-overlay');
+      const summaryEl = document.getElementById('ride-summary-overlay');
+      idleEl.classList.add('hidden');
+      idleEl.style.display = 'none';
+      summaryEl.classList.add('hidden');
+      summaryEl.style.display = 'none';
+
+      document.getElementById('ride-start-btn').classList.add('hidden');
+      document.getElementById('ride-controls-row').classList.remove('hidden');
+      document.getElementById('open-wheel-btn').classList.add('pointer-events-none', 'opacity-40');
+      updateUI();
+
+      rideAnimId = requestAnimationFrame(loopRide);
+    }
+
+    function loopRide(now) {
+      if (!isRiding) return;
+      const dt = Math.min((now - lastFrameTime) / 1000, 0.05);
+      lastFrameTime = now;
+      if (hazardCooldown > 0) hazardCooldown -= dt;
+
+      const basePace = Math.min(1.8, +(1.0 + distanceMeters / 260).toFixed(1));
+      speedMult = isBoosting ? Math.min(2.2, +(basePace + 0.35).toFixed(1)) : Math.max(0.45, +(basePace * 0.55).toFixed(1));
+      const pxPerSec = isBoosting ? (180 * speedMult) : (70 * speedMult);
+      const dx = pxPerSec * dt;
+
+      worldScroll += dx;
+      distanceMeters += dx * 0.06;
+      if (Math.floor(distanceMeters) > 0 && Math.floor(distanceMeters) % 15 === 0) {
+        rideGold += 1;
+      }
+
+      const w = canvas.clientWidth || 340;
+      const riderX = Math.min(90, w * 0.24);
+      const groundY = getGroundYAt(riderX);
+
+      const gravity = 1080;
+      if (!isGrounded) {
+        riderVy += gravity * dt;
+        riderY += riderVy * dt;
+        if (riderY >= 0) {
+          riderY = 0;
+          riderVy = 0;
+          isGrounded = true;
+        }
+      }
+
+      const riderDrawY = groundY + riderY;
+
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        spawnRideEntities();
+        spawnTimer = Math.max(0.54, 1.02 - (speedMult - 1) * 0.26);
+      }
+
+      collectibles.forEach(item => {
+        item.x -= dx;
+        if (!item.collected) {
+          const hitRadius = item.kind === 'bolt' ? 38 : 34;
+          const distSq = Math.pow(item.x - riderX, 2) + Math.pow(item.y - (riderDrawY - 14), 2);
+          if (distSq < hitRadius * hitRadius) {
+            item.collected = true;
+            let pts = item.kind === 'bolt' ? 35 : (item.kind === 'star' ? 25 : 10);
+            if (hasBuff('stars') && (item.kind === 'star' || item.kind === 'bolt')) pts *= 2;
+            if (hasBuff('double')) pts *= 2;
+            rideGold += pts;
+            state.totalTaps += item.kind === 'bolt' ? 3 : 1;
+            playSound(item.kind === 'bolt' ? 'bolt' : (item.kind === 'star' ? 'star' : 'coin'));
+            const colorClass = item.kind === 'bolt'
+              ? 'text-cyan-300'
+              : (item.kind === 'star' ? 'text-amber-300' : 'text-emerald-300');
+            const prefix = item.kind === 'bolt' ? '⚡ +' : '+';
+            showRideFloatingText(item.x, item.y - 10, prefix + pts + ' ORO', colorClass);
+          }
+        }
+      });
+      collectibles = collectibles.filter(c => c.x > -40 && !c.collected);
+
+      let hitHazard = false;
+      hazards = hazards.filter(hz => {
+        hz.x -= dx;
+        const hzGroundY = getGroundYAt(hz.x);
+        const withinX = Math.abs(hz.x - riderX) < 20;
+        const withinY = Math.abs((hzGroundY - 11) - (riderDrawY - 12)) < 18;
+        if (withinX && withinY && hazardCooldown <= 0) {
+          if ((state.shieldCharges || 0) > 0) {
+            state.shieldCharges -= 1;
+            hazardCooldown = 1.0;
+            playSound('star');
+            showRideFloatingText(riderX, riderDrawY - 36, '🛡️ RESCODO', 'text-sky-300');
+            saveState();
+            updateUI();
+            return false;
+          }
+          hitHazard = true;
+        }
+        return hz.x > -40;
+      });
+
+      renderRideFrame(riderX, groundY, riderDrawY);
+      updateUI();
+
+      if (hitHazard) {
+        finishRide();
+        return;
+      }
+
+      rideAnimId = requestAnimationFrame(loopRide);
+    }
+
+    function finishRide() {
+      isRiding = false;
+      isBoosting = false;
+      if (rideAnimId) {
+        cancelAnimationFrame(rideAnimId);
+        rideAnimId = null;
+      }
+      playSound('crash');
+
+      let finalGold = rideGold;
+      if (hasBuff('joker') && finalGold > 0) {
+        finalGold = Math.round(finalGold * 1.15);
+      }
+
+      const metersInt = Math.floor(distanceMeters);
+      if (metersInt > (state.bestRideMeters || 0)) {
+        state.bestRideMeters = metersInt;
+      }
+      if (finalGold > state.bestRoundGold) {
+        state.bestRoundGold = finalGold;
+      }
+
+      state.gold += finalGold;
+      state.roundsPlayed++;
+      state.ridesSinceWheel = (state.ridesSinceWheel || 0) + 1;
+      state.activeBuffs = [];
+
+      if (finalGold > 0) {
+        addHistory('Paseo (' + metersInt + ' m)', '+' + formatGold(finalGold) + ' ORO', 'gain');
+      }
+
+      saveState();
+      updateUI();
+
+      document.getElementById('ride-controls-row').classList.add('hidden');
+      document.getElementById('ride-start-btn').classList.remove('hidden');
+      document.getElementById('open-wheel-btn').classList.remove('pointer-events-none', 'opacity-40');
+
+      document.getElementById('ride-summary-gold').textContent = '+' + formatGold(finalGold) + ' ORO';
+      document.getElementById('ride-summary-detail').textContent = 'Recorriste ' + metersInt + ' m en el taller';
+      const summaryEl = document.getElementById('ride-summary-overlay');
+      summaryEl.classList.remove('hidden');
+      summaryEl.style.display = 'flex';
+
+      maybeTriggerAutoWheel();
+    }
+
+    function closeRideSummary() {
+      if (rideAnimId) {
+        cancelAnimationFrame(rideAnimId);
+        rideAnimId = null;
+      }
+      isRiding = false;
+      isBoosting = false;
+      distanceMeters = 0;
+      rideGold = 0;
+      speedMult = 1.0;
+
+      const summaryEl = document.getElementById('ride-summary-overlay');
+      const idleEl = document.getElementById('ride-idle-overlay');
+      summaryEl.classList.add('hidden');
+      summaryEl.style.display = 'none';
+      idleEl.classList.remove('hidden');
+      idleEl.style.display = 'flex';
+      updateUI();
+      drawIdleScene();
+    }
+
+    document.getElementById('sound-toggle').addEventListener('click', toggleSound);
+    document.getElementById('open-msg-btn').addEventListener('click', () => openMessageModal(false));
+    document.getElementById('open-sup-btn').addEventListener('click', openSupportModal);
+    document.getElementById('send-mark-btn').addEventListener('click', () => openMessageModal(true));
+    document.getElementById('ride-new-btn').addEventListener('click', closeRideSummary);
+    document.getElementById('ride-start-btn').addEventListener('click', startRide);
+    document.getElementById('close-msg-btn').addEventListener('click', closeMessageModal);
+    document.getElementById('send-wa-btn').addEventListener('click', sendViaWhatsApp);
+    document.getElementById('send-mail-btn').addEventListener('click', sendViaEmail);
+    document.getElementById('save-contact-btn').addEventListener('click', saveContactConfig);
+    document.getElementById('close-sup-btn').addEventListener('click', closeSupportModal);
+    document.getElementById('close-sup-btn-2').addEventListener('click', closeSupportModal);
+    document.getElementById('save-sup-btn').addEventListener('click', saveSupportUrl);
+    document.getElementById('close-wheel-btn').addEventListener('click', closeWheelModal);
+    document.getElementById('close-wheel-btn-2').addEventListener('click', closeWheelModal);
+    document.getElementById('spin-action-btn').addEventListener('click', spinWheel);
+
+    bindControlButtons();
+    loadState();
+  </script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tienda del Taller — Forjador de Oro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f17;
+      color: #f8fafc;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-5 max-w-md mx-auto relative">
+
+  <div>
+    <header class="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 shadow-lg">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <a href="index.html" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center justify-center font-black shrink-0 transition" title="Volver al inicio">
+          ←
+        </a>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-base font-extrabold tracking-tight text-amber-400 leading-tight truncate">🛒 Tienda del Taller</h1>
+          <p id="header-user-subtitle" class="text-[11px] text-slate-400 truncate">Subí de nivel tus herramientas</p>
+        </div>
+      </div>
+
+      <button type="button" id="sound-toggle" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center transition shrink-0" title="Sonido">
+        <span id="sound-icon">🔊</span>
+      </button>
+    </header>
+
+    <div class="mt-2 grid grid-cols-2 gap-2">
+      <button type="button" id="open-msg-btn" class="py-2 px-3 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>✉️</span>
+        <span>Mensaje</span>
+      </button>
+      <button type="button" id="open-sup-btn" class="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-400/40 flex items-center justify-center gap-1.5 text-xs font-extrabold transition">
+        <span>☕</span>
+        <span>Colaborar</span>
+      </button>
+    </div>
+
+    <section class="mt-3 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700/80 rounded-2xl p-3.5 shadow-xl">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Tesoro del Taller</span>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span class="text-lg">🪙</span>
+            <span id="total-gold" class="text-2xl sm:text-3xl font-black mono tracking-tight text-amber-300">1.000</span>
+            <span class="text-[11px] font-bold text-amber-400/80">ORO</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="rank-title" class="font-extrabold text-amber-400 text-xs block">🔨 Aprendiz</span>
+          <span id="workshop-stats-line" class="text-[10px] text-slate-300 block">Yunque Nv.1 · Moto Nv.1</span>
+          <span id="best-record-badge" class="text-[10px] font-bold text-emerald-400 mono">Récord: 0</span>
+        </div>
+      </div>
+    </section>
+
+    <p id="shop-feedback" class="mt-2.5 text-xs font-bold text-emerald-400 min-h-[18px] px-1"></p>
+
+    <main id="shop-items-container" class="mt-1 space-y-2.5"></main>
+  </div>
+
+  <!-- MODAL MENSAJE -->
+  <div id="message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border-2 border-indigo-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl my-auto">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-indigo-300">✉️ Mensaje al Diseñador</h3>
+        <button type="button" id="close-msg-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Escribí tu mensaje y elegí enviarlo por WhatsApp o correo electrónico.
+      </p>
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Tu mensaje</label>
+      <textarea id="player-message-text" rows="3" placeholder="Ej: ¡Qué bueno quedó el taller! Estuve mejorando las herramientas." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white text-xs focus:outline-none focus:border-indigo-400"></textarea>
+      <label class="mt-2.5 flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+        <input id="include-stats-checkbox" type="checkbox" checked class="rounded border-slate-600 bg-slate-950 text-indigo-500 focus:ring-0" />
+        <span>Incluir datos de la partida (apodo, oro, récord y visitas)</span>
+      </label>
+      <p id="message-feedback-msg" class="hidden mt-2 text-[11px] font-bold text-rose-400"></p>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button type="button" id="send-wa-btn" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>💬</span>
+          <span>WhatsApp</span>
+        </button>
+        <button type="button" id="send-mail-btn" class="py-2.5 px-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>📧</span>
+          <span>Correo</span>
+        </button>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-800">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-2">Destino de contacto (guardado acá)</span>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">WhatsApp (ej: 5492364000000)</label>
+            <input id="creator-whatsapp-input" type="tel" placeholder="5492364502082" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Correo electrónico</label>
+            <input id="creator-email-input" type="email" placeholder="sbocontrol@gmail.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white mono text-xs focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+        <button type="button" id="save-contact-btn" class="w-full mt-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 font-bold text-xs transition">
+          Guardar contacto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL COLABORACIÓN -->
+  <div id="support-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-400/70 rounded-3xl p-5 w-full max-w-sm shadow-2xl">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-base font-black text-amber-400">☕ Colaboración para el Diseñador</h3>
+        <button type="button" id="close-sup-btn" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed mb-3">
+        Espacio de colaboración voluntaria para quien diseña y desarrolla el taller. Guardá tu enlace cuando lo tengas listo.
+      </p>
+      <div id="support-link-ready-box" class="hidden mb-3 p-3 rounded-xl bg-slate-950 border border-emerald-500/40">
+        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block mb-1">Enlace de colaboración listo</span>
+        <p id="support-link-preview" class="text-xs mono text-slate-200 break-all mb-2.5"></p>
+        <a id="support-external-anchor" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 transition">
+          <span>🚀</span>
+          <span>Ir a colaborar</span>
+        </a>
+      </div>
+      <div id="support-link-empty-box" class="mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400">
+        Todavía no cargaste un enlace de colaboración. Pegá acá tu link cuando quieras.
+      </div>
+      <label class="block text-[11px] font-bold text-slate-400 mb-1">Enlace de colaboración</label>
+      <input id="support-url-input" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white mono text-xs focus:outline-none focus:border-amber-500" />
+      <p id="support-error-msg" class="hidden mt-1.5 text-[11px] font-bold text-rose-400"></p>
+      <div class="flex gap-2 mt-3.5">
+        <button type="button" id="save-sup-btn" class="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
+          Guardar enlace
+        </button>
+        <button type="button" id="close-sup-btn-2" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'forjador_oro_arcade_v3';
+    const MAX_SPINS_PER_ROUND_CYCLE = 3;
+    const MAX_UPGRADE_LEVEL = 10;
+
+    let state = {
+      gold: 1000,
+      bestRoundGold: 0,
+      roundsPlayed: 0,
+      totalTaps: 0,
+      visitsCount: 0,
+      bestRideMeters: 0,
+      anvilLevel: 1,
+      rideLevel: 1,
+      wheelLevel: 1,
+      shieldCharges: 0,
+      nickname: '',
+      supportUrl: '',
+      creatorWhatsApp: '5492364502082',
+      creatorEmail: 'sbocontrol@gmail.com',
+      history: [],
+      soundEnabled: true,
+      activeBuffs: [],
+      spinsLeft: MAX_SPINS_PER_ROUND_CYCLE,
+      wheelPos: null
+    };
+
+    function getUpgradeCost(baseCost, currentLevel) {
+      return Math.round(baseCost * Math.pow(1.45, Math.max(0, currentLevel - 1)));
+    }
+
+    function getShopCatalog() {
+      const anvilLv = state.anvilLevel || 1;
+      const rideLv = state.rideLevel || 1;
+      const wheelLv = state.wheelLevel || 1;
+      const shields = state.shieldCharges || 0;
+
+      return [
+        {
+          id: 'anvil_upgrade',
+          icon: '🔨',
+          name: 'Yunque Templado',
+          badge: 'Nv. ' + anvilLv + '/' + MAX_UPGRADE_LEVEL,
+          desc: 'Sube la potencia base del taller (+' + (anvilLv * 2) + ' fuerza de forja).',
+          cost: getUpgradeCost(250, anvilLv),
+          maxed: anvilLv >= MAX_UPGRADE_LEVEL,
+          apply() {
+            state.anvilLevel = anvilLv + 1;
+            state.totalTaps = (state.totalTaps || 0) + 5;
+          }
+        },
+        {
+          id: 'ride_upgrade',
+          icon: '🛵',
+          name: 'Suspensión de la Moto',
+          badge: 'Nv. ' + rideLv + '/' + MAX_UPGRADE_LEVEL,
+          desc: 'Mejora el agarre en lomadas y suma +' + (rideLv * 5) + ' ORO de bono en paseos.',
+          cost: getUpgradeCost(300, rideLv),
+          maxed: rideLv >= MAX_UPGRADE_LEVEL,
+          apply() {
+            state.rideLevel = rideLv + 1;
+          }
+        },
+        {
+          id: 'wheel_upgrade',
+          icon: '⚙️',
+          name: 'Engranaje del Taller',
+          badge: 'Nv. ' + wheelLv + '/' + MAX_UPGRADE_LEVEL,
+          desc: 'Afinación general de la maquinaria y +10 golpes de experiencia.',
+          cost: getUpgradeCost(350, wheelLv),
+          maxed: wheelLv >= MAX_UPGRADE_LEVEL,
+          apply() {
+            state.wheelLevel = wheelLv + 1;
+            state.totalTaps = (state.totalTaps || 0) + 10;
+          }
+        },
+        {
+          id: 'shield_charge',
+          icon: '🛡️',
+          name: 'Rescoldo Protector',
+          badge: 'Tenés: ' + shields,
+          desc: 'Carga de respaldo para amortiguar golpes o chispas en el taller.',
+          cost: 220,
+          maxed: shields >= 5,
+          maxLabel: 'Máx. 5 cargas',
+          apply() {
+            state.shieldCharges = shields + 1;
+          }
+        },
+        {
+          id: 'exp_surge',
+          icon: '⚡',
+          name: 'Empuje de Experiencia (+40)',
+          badge: 'Rango',
+          desc: 'Suma 40 golpes al contador para escalar más rápido de categoría.',
+          cost: 400,
+          maxed: false,
+          apply() {
+            state.totalTaps = (state.totalTaps || 0) + 40;
+          }
+        }
+      ];
+    }
+
+    function formatGold(num) {
+      return Math.floor(num).toLocaleString('es-AR');
+    }
+
+    function getRankInfo() {
+      const t = state.totalTaps;
+      if (t < 25) return { name: '🔨 Aprendiz' };
+      if (t < 75) return { name: '⚒️ Oficial' };
+      if (t < 150) return { name: '⚡ Maestro Herrero' };
+      return { name: '👑 Leyenda del Taller' };
+    }
+
+    function addHistory(text, amountStr, type = 'gain') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      state.history.unshift({ time: timeStr, text, amount: amountStr, type });
+      if (state.history.length > 20) state.history.pop();
+    }
+
+    function renderShopItems() {
+      const container = document.getElementById('shop-items-container');
+      if (!container) return;
+
+      const items = getShopCatalog();
+      container.innerHTML = items.map(item => {
+        const canAfford = !item.maxed && state.gold >= item.cost;
+        const buttonText = item.maxed
+          ? (item.maxLabel || 'Nivel máximo')
+          : 'Mejorar (' + formatGold(item.cost) + ')';
+
+        return `
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-md">
+            <div class="flex items-start gap-2.5 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl shrink-0">
+                ${item.icon}
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h2 class="text-xs font-extrabold text-white truncate">${item.name}</h2>
+                  <span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] mono font-bold text-amber-300 shrink-0">${item.badge}</span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">${item.desc}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              data-buy-id="${item.id}"
+              ${canAfford ? '' : 'disabled'}
+              class="shrink-0 py-2 px-3 rounded-xl font-black text-[11px] mono transition ${
+                canAfford
+                  ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow active:scale-95'
+                  : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+              }"
+            >
+              ${buttonText}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-buy-id]').forEach(btn => {
+        btn.addEventListener('click', () => buyShopItem(btn.getAttribute('data-buy-id')));
+      });
+    }
+
+    function buyShopItem(itemId) {
+      const item = getShopCatalog().find(i => i.id === itemId);
+      const fb = document.getElementById('shop-feedback');
+      if (!item || item.maxed) return;
+
+      if (state.gold < item.cost) {
+        if (fb) {
+          fb.textContent = '⚠️ Te faltan monedas para ' + item.name + '.';
+          fb.className = 'mt-2.5 text-xs font-bold text-rose-400 min-h-[18px] px-1';
+        }
+        return;
+      }
+
+      state.gold -= item.cost;
+      item.apply();
+      addHistory('Tienda: ' + item.name, '-' + formatGold(item.cost) + ' ORO', 'loss');
+
+      playSound('star');
+      saveState();
+      updateUI();
+
+      if (fb) {
+        fb.textContent = '✅ Listo: mejoraste ' + item.name + '.';
+        fb.className = 'mt-2.5 text-xs font-bold text-emerald-400 min-h-[18px] px-1';
+      }
+    }
+
+    function updateUI() {
+      const rank = getRankInfo();
+      document.getElementById('total-gold').textContent = formatGold(state.gold);
+      document.getElementById('best-record-badge').textContent = 'Récord: ' + formatGold(state.bestRoundGold);
+      document.getElementById('rank-title').textContent = rank.name;
+      document.getElementById('workshop-stats-line').textContent =
+        'Yunque Nv.' + (state.anvilLevel || 1) + ' · Moto Nv.' + (state.rideLevel || 1);
+      document.getElementById('header-user-subtitle').textContent =
+        (state.nickname ? state.nickname + ' · ' : '') + 'Golpes: ' + formatGold(state.totalTaps || 0);
+      document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
+
+      renderShopItems();
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = Object.assign({}, state, parsed);
+          if (!state.creatorWhatsApp) state.creatorWhatsApp = '5492364502082';
+          if (!state.creatorEmail) state.creatorEmail = 'sbocontrol@gmail.com';
+          if (typeof state.spinsLeft !== 'number') state.spinsLeft = MAX_SPINS_PER_ROUND_CYCLE;
+          if (!Array.isArray(state.activeBuffs)) state.activeBuffs = [];
+          if (typeof state.anvilLevel !== 'number') state.anvilLevel = 1;
+          if (typeof state.rideLevel !== 'number') state.rideLevel = 1;
+          if (typeof state.wheelLevel !== 'number') state.wheelLevel = 1;
+          if (typeof state.shieldCharges !== 'number') state.shieldCharges = 0;
+        }
+      } catch (e) {}
+      saveState();
+      updateUI();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function openMessageModal() {
+      document.getElementById('creator-whatsapp-input').value = state.creatorWhatsApp || '';
+      document.getElementById('creator-email-input').value = state.creatorEmail || '';
+      document.getElementById('message-feedback-msg').classList.add('hidden');
+      const msgEl = document.getElementById('player-message-text');
+      if (!msgEl.value.trim()) msgEl.value = '¡Hola! Estuve mirando la Tienda del taller.';
+      const modal = document.getElementById('message-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeMessageModal() {
+      const modal = document.getElementById('message-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveContactConfig() {
+      state.creatorWhatsApp = document.getElementById('creator-whatsapp-input').value.replace(/\D/g, '');
+      state.creatorEmail = document.getElementById('creator-email-input').value.trim();
+      saveState();
+      const fb = document.getElementById('message-feedback-msg');
+      fb.textContent = '✅ Contacto guardado en este dispositivo.';
+      fb.className = 'mt-2 text-[11px] font-bold text-emerald-400';
+      fb.classList.remove('hidden');
+    }
+
+    function buildFullMessageBody() {
+      const customText = document.getElementById('player-message-text').value.trim();
+      const includeStats = document.getElementById('include-stats-checkbox').checked;
+      let body = customText || '¡Hola! Miré la Tienda.';
+      if (includeStats) {
+        const nick = state.nickname || 'Invitado';
+        body += '\n\n— Datos del taller —\nHerrero: ' + nick + '\nOro actual: ' + formatGold(state.gold) + '\nRécord de ronda: ' + formatGold(state.bestRoundGold) + '\nVisitas: ' + formatGold(state.visitsCount);
+      }
+      return body;
+    }
+
+    function sendViaWhatsApp() {
+      const fb = document.getElementById('message-feedback-msg');
+      const phone = (document.getElementById('creator-whatsapp-input').value || state.creatorWhatsApp || '').replace(/\D/g, '');
+      if (!phone) {
+        fb.textContent = '⚠️ Primero cargá y guardá un número de WhatsApp.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorWhatsApp = phone;
+      saveState();
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(buildFullMessageBody()), '_blank', 'noopener,noreferrer');
+    }
+
+    function sendViaEmail() {
+      const fb = document.getElementById('message-feedback-msg');
+      const email = (document.getElementById('creator-email-input').value || state.creatorEmail || '').trim();
+      if (!email) {
+        fb.textContent = '⚠️ Primero cargá y guardá un correo electrónico.';
+        fb.className = 'mt-2 text-[11px] font-bold text-rose-400';
+        fb.classList.remove('hidden');
+        return;
+      }
+      state.creatorEmail = email;
+      saveState();
+      window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('Mensaje desde Tienda del Taller') + '&body=' + encodeURIComponent(buildFullMessageBody());
+    }
+
+    function openSupportModal() {
+      const input = document.getElementById('support-url-input');
+      const err = document.getElementById('support-error-msg');
+      const readyBox = document.getElementById('support-link-ready-box');
+      const emptyBox = document.getElementById('support-link-empty-box');
+      input.value = state.supportUrl || '';
+      err.classList.add('hidden');
+      if (state.supportUrl) {
+        document.getElementById('support-link-preview').textContent = state.supportUrl;
+        document.getElementById('support-external-anchor').href = state.supportUrl;
+        readyBox.classList.remove('hidden');
+        emptyBox.classList.add('hidden');
+      } else {
+        readyBox.classList.add('hidden');
+        emptyBox.classList.remove('hidden');
+      }
+      const modal = document.getElementById('support-modal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function closeSupportModal() {
+      const modal = document.getElementById('support-modal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    function saveSupportUrl() {
+      const raw = document.getElementById('support-url-input').value.trim();
+      const err = document.getElementById('support-error-msg');
+      if (!raw) {
+        state.supportUrl = '';
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+        return;
+      }
+      const normalized = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw;
+      try {
+        const parsed = new URL(normalized);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error();
+        state.supportUrl = parsed.toString();
+        err.classList.add('hidden');
+        saveState();
+        openSupportModal();
+      } catch (e) {
+        err.textContent = 'Ingresá un enlace válido (ejemplo: https://ko-fi.com/tunombre).';
+        err.classList.remove('hidden');
+      }
+    }
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtor) audioCtx = new AudioCtor();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'star') {
+          osc.frequency.setValueAtTime(783.99, now);
+          osc.frequency.setValueAtTime(987.77, now + 0.05);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      saveState();
+      updateUI();
+    }
+
+    document.getElementById('sound-toggle').addEventListener('click', toggleSound);
+    document.getElementById('open-msg-btn').addEventListener('click', () => openMessageModal());
+    document.getElementById('open-sup-btn').addEventListener('click', openSupportModal);
+    document.getElementById('close-msg-btn').addEventListener('click', closeMessageModal);
+    document.getElementById('send-wa-btn').addEventListener('click', sendViaWhatsApp);
+    document.getElementById('send-mail-btn').addEventListener('click', sendViaEmail);
+    document.getElementById('save-contact-btn').addEventListener('click', saveContactConfig);
+    document.getElementById('close-sup-btn').addEventListener('click', closeSupportModal);
+    document.getElementById('close-sup-btn-2').addEventListener('click', closeSupportModal);
+    document.getElementById('save-sup-btn').addEventListener('click', saveSupportUrl);
+
+    loadState();
+  </script>
+</body>
+</html>
